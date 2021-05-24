@@ -9,7 +9,7 @@ contract BlockPaperScissors {
         GameState state;
         address firstPlayer;
         address secondPlayer;
-        bytes32 firstMoveHash;
+        bytes32 firstMoveEncrypted;
         bytes32 firstMoveSecret;
         Move secondMove;
     }
@@ -20,8 +20,9 @@ contract BlockPaperScissors {
     mapping(address => bytes32[]) public playerGames;
 
     event GameStarted(address firstPlayer, address secondPlayer, bytes32 gameId);
+    event FirstMovePlayed(bytes32 gameId, bytes32 encryptedMove);
 
-    function startGame(address opponent, bytes32 moveHash) public {
+    function startGame(address opponent, bytes32 encryptedMove) public {
         bytes32 gameId = keccak256(abi.encodePacked(gameCount, msg.sender, opponent));
         gameCount++;
 
@@ -33,6 +34,9 @@ contract BlockPaperScissors {
         playerGames[opponent].push(gameId);
 
         emit GameStarted(msg.sender, opponent, gameId);
+
+        games[gameId].firstMoveEncrypted = encryptedMove;
+        emit FirstMovePlayed(gameId, encryptedMove);
     }
     
 }
