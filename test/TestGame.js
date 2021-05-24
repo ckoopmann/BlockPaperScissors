@@ -12,9 +12,12 @@ contract("TestGame", (accounts) => {
 
     it("should be able to start a new Game", async function () {
       const opponent = accounts[1];
-      await this.contract.startGame(opponent);
+      console.log(web3.version);
+      console.log(web3.utils.soliditySha3);
+      const secret = web3.utils.soliditySha3('123456');
+      // Hash rock move
+      const hashedMove = web3.utils.soliditySha3(1, secret);
+      await this.contract.startGame(opponent, hashedMove);
     });
-
   });
 });
-

@@ -3,19 +3,36 @@ pragma solidity >=0.4.21 <0.7.0;
 
 contract BlockPaperScissors {
 
+    enum Move { None, Block, Paper, Scissors}
+    enum GameState { None, Started, Played, Evaluated}
     struct Game {
-        bool isStarted;
+        GameState state;
+        address firstPlayer;
+        address secondPlayer;
+        bytes32 firstMoveHash;
+        bytes32 firstMoveSecret;
+        Move secondMove;
     }
+    
+    uint256 gameCount;
 
-    mapping(address => mapping(address => Game)) games;
+    mapping(bytes32 => Game) games;
+    mapping(address => bytes32[]) public playerGames;
 
-    event GameStarted(address firstPlayer, address secondPlayer);
+    event GameStarted(address firstPlayer, address secondPlayer, bytes32 gameId);
 
-    function startGame(address opponent) public {
-        require(!games[msg.sender][opponent].isStarted, "Game has already been started");
+    function startGame(address opponent, bytes32 moveHash) public {
+        bytes32 gameId = keccak256(abi.encodePacked(gameCount, msg.sender, opponent));
+        gameCount++;
 
-        games[msg.sender][opponent].isStarted = true;
-        
-        emit GameStarted(msg.sender, opponent);
+        games[gameId].state = GameState.Started;
+        games[gameId].firstPlayer = msg.sender;
+        games[gameId].secondPlayer = opponent;
+
+        playerGames[msg.sender].push(gameId);
+        playerGames[opponent].push(gameId);
+
+        emit GameStarted(msg.sender, opponent, gameId);
     }
+    
 }
