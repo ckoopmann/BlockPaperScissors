@@ -12,6 +12,7 @@ contract BlockPaperScissors {
         bytes32 firstMoveEncrypted;
         bytes32 firstMoveSecret;
         Move secondMove;
+        bool firstPlayerWon;
     }
     
     uint256 gameCount;
@@ -24,6 +25,8 @@ contract BlockPaperScissors {
     event FirstMoveRevealed(bytes32 gameId, bytes32 encryptedMove, Move decryptedMove, bytes32 secret);
     event MoveHashCalculated(bytes32 encryptedMove, uint8 decryptedMove, bytes32 secret);
     event SecondMovePlayed(bytes32 gameId, Move move);
+    event FirstPlayerWon(bytes32 gameId);
+    event SecondPlayerWon(bytes32 gameId);
 
     function encryptMove(uint8 move, bytes32 secret) public pure returns (bytes32) {
         return keccak256(abi.encodePacked(move, secret));
@@ -58,7 +61,7 @@ contract BlockPaperScissors {
     }
 
     function makeMove(bytes32 gameId, uint8 move) public {
-        require(move <= uint8(Move.Scissors), "Invalid Move: Out of range");
+        require(move <= 3, "Invalid Move: Out of range");
         require(move > 0, "Invalid Move: Zero");
         require(msg.sender == games[gameId].secondPlayer, "Sender is not the second player");
         require(games[gameId].state == GameState.Started, "Can't move in current game state");
@@ -69,13 +72,46 @@ contract BlockPaperScissors {
         emit SecondMovePlayed(gameId, Move(move));
     }
 
-    function revealMove(bytes32 gameId, bytes32 secret) public {
+
+    function evaluateGame(bytes32 gameId, bytes32 secret) public {
         require(msg.sender == games[gameId].firstPlayer, "Sender is not the first player");
         require(games[gameId].state == GameState.Played, "Can't reveal move in current game state");
+
+        // Decrypt move using given secret
         bytes32 encryptedMove = games[gameId].firstMoveEncrypted;
         uint8 decryptedMove = decryptMove(encryptedMove, secret);
         require(decryptedMove > 0, "No valid move could be decrypted for given secret");
+        games[gameId].firstMoveSecret = secret;
         emit FirstMoveRevealed(gameId, encryptedMove, Move(decryptedMove), secret);
+
+        // Evaluate Game
+        Move firstMove = Move(decryptedMove);
+        Move secondMove = games[gameId].secondMove;
+        bool firstPlayerWon = (firstMove == Move.Block && secondMove == Move.Scissors) ||
+            (firstMove == Move.Paper && secondMove == Move.Block) ||
+            (firstMove == Move.Scissors && secondMove == Move.Paper);
+        games[gameId].state = GameState.Evaluated;
+        if(firstPlayerWon){
+            games[gameId].firstPlayerWon = true;
+            emit FirstPlayerWon(gameId);
+        }
+        else {
+            emit SecondPlayerWon(gameId);
+        }
+    }
+
+    function getGameResult(bytes32 gameId) public view returns(uint8){
+        if(games[gameId].state == GameState.Evaluated){
+            if(games[gameId].firstPlayerWon){
+                return 1;
+            }
+            else{
+                return 2;
+            }
+        }
+        else{
+            return 0;
+        }
     }
 
     

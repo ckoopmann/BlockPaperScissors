@@ -30,7 +30,12 @@ contract("TestGame", (accounts) => {
 
     it("First Player should be able to reveal move", async function () {
       // Paper move
-      await this.contract.revealMove(gameId, secret, {from: owner});
+      await this.contract.evaluateGame(gameId, secret, {from: owner});
     });
+
+    it("Correct Result is returned for evaluated game", async function () {
+      const gameResult = await this.contract.getGameResult.call(gameId);
+      assert.equal(gameResult, 2, "Wrong game result");
+    })
   });
 });
