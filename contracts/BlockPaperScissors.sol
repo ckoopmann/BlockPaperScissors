@@ -5,6 +5,7 @@ contract BlockPaperScissors {
 
     enum Move { None, Block, Paper, Scissors}
     enum GameState { None, Started, Played, Evaluated}
+    enum GameResult { None, FirstPlayerWin, SecondPlayerWin, Draw }
     struct Game {
         GameState state;
         address firstPlayer;
@@ -12,7 +13,7 @@ contract BlockPaperScissors {
         bytes32 firstMoveEncrypted;
         bytes32 firstMoveSecret;
         Move secondMove;
-        bool firstPlayerWon;
+        GameResult result;
     }
     
     uint256 gameCount;
@@ -25,8 +26,7 @@ contract BlockPaperScissors {
     event FirstMoveRevealed(bytes32 gameId, bytes32 encryptedMove, Move decryptedMove, bytes32 secret);
     event MoveHashCalculated(bytes32 encryptedMove, uint8 decryptedMove, bytes32 secret);
     event SecondMovePlayed(bytes32 gameId, Move move);
-    event FirstPlayerWon(bytes32 gameId);
-    event SecondPlayerWon(bytes32 gameId);
+    event GameEvaluated(bytes32 gameId, GameResult result);
 
     function encryptMove(uint8 move, bytes32 secret) public pure returns (bytes32) {
         return keccak256(abi.encodePacked(move, secret));
@@ -87,31 +87,26 @@ contract BlockPaperScissors {
         // Evaluate Game
         Move firstMove = Move(decryptedMove);
         Move secondMove = games[gameId].secondMove;
+        games[gameId].result = _calculateGameResult(firstMove, secondMove);
+        games[gameId].state = GameState.Evaluated;
+        emit GameEvaluated(gameId, games[gameId].result);
+    }
+
+    function _calculateGameResult(Move firstMove, Move secondMove) internal returns(GameResult){
+        if(firstMove == secondMove){
+            return GameResult.Draw;
+        }
         bool firstPlayerWon = (firstMove == Move.Block && secondMove == Move.Scissors) ||
             (firstMove == Move.Paper && secondMove == Move.Block) ||
             (firstMove == Move.Scissors && secondMove == Move.Paper);
-        games[gameId].state = GameState.Evaluated;
         if(firstPlayerWon){
-            games[gameId].firstPlayerWon = true;
-            emit FirstPlayerWon(gameId);
+            return GameResult.FirstPlayerWin;
         }
-        else {
-            emit SecondPlayerWon(gameId);
-        }
+        return GameResult.SecondPlayerWin;
     }
 
     function getGameResult(bytes32 gameId) public view returns(uint8){
-        if(games[gameId].state == GameState.Evaluated){
-            if(games[gameId].firstPlayerWon){
-                return 1;
-            }
-            else{
-                return 2;
-            }
-        }
-        else{
-            return 0;
-        }
+        return uint8(games[gameId].result);
     }
 
     
