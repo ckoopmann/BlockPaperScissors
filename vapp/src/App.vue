@@ -8,6 +8,11 @@
     </div>
 
     <div class="section">
+      <h2>Block Paper Scissors</h2>
+      <BlockPaperScissors />
+    </div>
+
+    <div class="section">
       <h2>Tutorial Token</h2>
       <TutorialToken />
     </div>
@@ -28,6 +33,7 @@
 
 <script>
 import TutorialToken from './TutorialToken'
+import BlockPaperScissors from './BlockPaperScissors'
 import SimpleStorage from './SimpleStorage'
 import ComplexStorage from './ComplexStorage'
 import { mapGetters } from 'vuex'
@@ -37,6 +43,7 @@ export default {
   components: {
     ComplexStorage,
     TutorialToken,
+    BlockPaperScissors,
     SimpleStorage
   },
 
