@@ -1,10 +1,22 @@
 var BlockPaperScissors = artifacts.require("BlockPaperScissors");
 
+function calculateResult(firstMove, secondMove) {
+  if (firstMove == secondMove) {
+    return 3;
+  } else if (
+    (firstMove == 1 && secondMove == 3) ||
+    (firstMove == 2 && secondMove == 1) ||
+    (firstMove == 3 && secondMove == 2)
+  ) {
+    return 1;
+  } else {
+    return 2;
+  }
+}
+
 contract("TestGame", (accounts) => {
   const owner = accounts[0];
   const opponent = accounts[1];
-  const moves = [1, 2, 3];
-  const moveLabels = { 1: "Block", 2: "Paper", 3: "Scissors" };
 
   describe("BlockPaperScissors", function () {
     let gameId;
@@ -15,32 +27,37 @@ contract("TestGame", (accounts) => {
       });
     });
 
-    for (firstPlayerMove of moves) {
-      for (secondPlayerMove of moves) {
-        it(`should be able to start a new Game with ${moveLabels[firstPlayerMove]}`, async function () {
+    let moves = [1, 2, 3];
+    for (var i = 0; i < moves.length; i++) {
+      for (var j = 0; j < moves.length; j++) {
+        let firstPlayerMove = moves[i];
+        let secondPlayerMove = moves[j];
+        let expectedResult = calculateResult(firstPlayerMove, secondPlayerMove);
+
+        it(`${firstPlayerMove} / ${secondPlayerMove} - should be able to start a new Game`, async function () {
           const hashedMove = await this.contract.encryptMove.call(
             firstPlayerMove,
             secret
           );
-          console.log("encrypted move: ", hashedMove);
           gameId = await this.contract.startGame.call(opponent, hashedMove);
           await this.contract.startGame(opponent, hashedMove);
         });
 
-        it(`Opponent should be able to make move ${moveLabels[secondPlayerMove]}`, async function () {
+        it(`${firstPlayerMove} / ${secondPlayerMove} - Opponent should be able to make move`, async function () {
+          console.log("Second Player Move: ", secondPlayerMove);
           await this.contract.makeMove(gameId, secondPlayerMove, {
             from: opponent,
           });
         });
 
-        it(`First Player should be able to reveal ${moveLabels[firstPlayerMove]} move`, async function () {
+        it(`${firstPlayerMove} / ${secondPlayerMove} - First Player should be able to reveal`, async function () {
           // Paper move
           await this.contract.evaluateGame(gameId, secret, { from: owner });
         });
 
-        it(`Correct Result is returned for evaluated game with moves ${moveLabels[firstPlayerMove]} and ${moveLabels[secondPlayerMove]}`, async function () {
+        it(`${firstPlayerMove} / ${secondPlayerMove} - Correct Result is returned for evaluated game`, async function () {
           const gameResult = await this.contract.getGameResult.call(gameId);
-          assert.equal(gameResult, 2, "Wrong game result");
+          assert.equal(gameResult, expectedResult, "Wrong game result");
         });
       }
     }
