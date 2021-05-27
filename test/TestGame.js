@@ -61,5 +61,16 @@ contract("TestGame", (accounts) => {
         });
       }
     }
+
+    [owner, opponent].forEach((playerAddress) => {
+      it(`should be able to get games for player ${playerAddress}`, async function () {
+        const gameIds = await this.contract.getPlayerGames.call(playerAddress);
+        assert.equal(
+          gameIds.length,
+          moves.length ** 2,
+          "Wrong number of player games"
+        );
+      });
+    });
   });
 });

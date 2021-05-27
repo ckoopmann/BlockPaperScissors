@@ -108,6 +108,10 @@ contract BlockPaperScissors {
     function getGameResult(bytes32 gameId) public view returns(uint8){
         return uint8(games[gameId].result);
     }
+    
+    function getPlayerGames(address player) public view returns(bytes32[] memory){
+        return playerGames[player];
+    }
 
     
 }
