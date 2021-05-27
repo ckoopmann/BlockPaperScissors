@@ -12,6 +12,7 @@ contract BlockPaperScissors {
         address secondPlayer;
         bytes32 firstMoveEncrypted;
         bytes32 firstMoveSecret;
+        Move firstMove;
         Move secondMove;
         GameResult result;
     }
@@ -85,9 +86,8 @@ contract BlockPaperScissors {
         emit FirstMoveRevealed(gameId, encryptedMove, Move(decryptedMove), secret);
 
         // Evaluate Game
-        Move firstMove = Move(decryptedMove);
-        Move secondMove = games[gameId].secondMove;
-        games[gameId].result = _calculateGameResult(firstMove, secondMove);
+        games[gameId].firstMove = Move(decryptedMove);
+        games[gameId].result = _calculateGameResult(games[gameId].firstMove, games[gameId].secondMove);
         games[gameId].state = GameState.Evaluated;
         emit GameEvaluated(gameId, games[gameId].result);
     }
@@ -113,5 +113,8 @@ contract BlockPaperScissors {
         return playerGames[player];
     }
 
-    
+    function getGameData(bytes32 gameId) public view returns(uint8, address, address, bytes32, bytes32, uint8, uint8, uint8){
+        Game storage game = games[gameId];
+        return (uint8(game.state), game.firstPlayer, game.secondPlayer, game.firstMoveEncrypted, game.firstMoveSecret, uint8(game.firstMove), uint8(game.secondMove), uint8(game.result));
+    }
 }
