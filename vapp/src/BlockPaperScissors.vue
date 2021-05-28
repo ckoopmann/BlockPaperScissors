@@ -1,6 +1,7 @@
 <template>
   <div v-if="isDrizzleInitialized">
-    <GameDetails v-for="id in gameIds" :key="id" :gameId="id" />
+    <h2>Your Games</h2>
+    <GameDetails v-for="(id, index) in gameIds" :key="index" :gameId="id" />
   </div>
 
   <div v-else>Loading...</div>
