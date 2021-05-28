@@ -1,7 +1,6 @@
 <template>
   <div v-if="isDrizzleInitialized">
-    <p>{{ contractData }}</p>
-
+    <GameDetails v-for="id in gameIds" :key="id" :gameId="id" />
   </div>
 
   <div v-else>Loading...</div>
@@ -9,6 +8,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import GameDetails from "./GameDetails";
 
 export default {
   data() {
@@ -19,6 +19,8 @@ export default {
       toAscii: false,
     };
   },
+
+  components: { GameDetails },
 
   computed: {
     ...mapGetters("accounts", ["activeAccount"]),
@@ -33,7 +35,7 @@ export default {
       return !this.contractInstances[this.contractName].synced;
     },
 
-    contractData() {
+    gameIds() {
       const arg = {
         contract: this.contractName,
         method: this.method,
@@ -42,6 +44,9 @@ export default {
       };
       let contractData = this.getContractData(arg);
 
+      if (contractData === "loading") {
+        return [];
+      }
       return contractData;
     },
   },
