@@ -1,20 +1,7 @@
 <template>
   <div v-if="isDrizzleInitialized">
-    <drizzle-contract
-      contractName="BlockPaperScissors"
-      method="getPlayerGames"
-      label="Your Game Ids"
-      :methodArgs="accounts"
-    />
+    <p>{{ contractData }}</p>
 
-    <ul>
-      <li v-for="gameId in gameIds" :key="gameId">{{ gameId }}</li>
-    </ul>
-    <drizzle-contract-form
-      contractName="BlockPaperScissors"
-      method="startGame"
-      :placeholders="placeholders"
-    />
   </div>
 
   <div v-else>Loading...</div>
@@ -24,43 +11,56 @@
 import { mapGetters } from "vuex";
 
 export default {
-  name: "BlockPaperScissors",
-  computed: {
-    ...mapGetters("accounts", ["activeAccount", "activeBalance"]),
-    ...mapGetters("drizzle", ["isDrizzleInitialized", "isDrizzleSynced"]),
-    ...mapGetters("contracts", ["getContractData"]),
+  data() {
+    return {
+      contractName: "BlockPaperScissors",
+      method: "getPlayerGames",
+      toUtf8: false,
+      toAscii: false,
+    };
+  },
 
-    accounts() {
+  computed: {
+    ...mapGetters("accounts", ["activeAccount"]),
+    ...mapGetters("contracts", ["getContractData", "contractInstances"]),
+    ...mapGetters("drizzle", ["isDrizzleInitialized"]),
+
+    methodArgs() {
       return [this.activeAccount];
     },
 
-    placeholders() {
-      return ["Opponent Address", "Encrypted Move"];
+    isStale() {
+      return !this.contractInstances[this.contractName].synced;
     },
 
-    gameIds() {
-      if (this.isDrizzleInitialized) {
-        if (this.isDrizzleSynced) {
-          console.log("Getting Game Ids for Address: ", this.accounts);
-          <!-- const idList = this.getContractData({ -->
-          <!--   contractName: "BlockPaperScissors", -->
-          <!--   method: "getPlayerGames", -->
-          <!--   methodArgs: this.accounts, -->
-          <!-- }); -->
-          if (idList == "loading") {
-            return ["loading"];
-          } else {
-            return idList;
-          }
-        } else {
-          return ["not synced"];
-        }
-      } else {
-        return ["notInitialized"];
-      }
+    contractData() {
+      const arg = {
+        contract: this.contractName,
+        method: this.method,
+        toUtf8: this.toUtf8,
+        toAscii: this.toAscii,
+      };
+      let contractData = this.getContractData(arg);
+
+      return contractData;
     },
+  },
+
+  created() {
+    const { contractName, method, methodArgs } = this;
+
+    this.$store.dispatch("drizzle/REGISTER_CONTRACT", {
+      contractName,
+      method,
+      methodArgs,
+    });
   },
 };
 </script>
-
-<style></style>
+<style scoped>
+.stale {
+  /* Release the inner Jackson Pollock */
+  border: 1px solid red;
+  background-color: yellow;
+}
+</style>
