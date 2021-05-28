@@ -1,59 +1,80 @@
 <template>
-  <div v-if="isDrizzleInitialized" id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
+  <v-app>
+    <v-app-bar app color="primary" dark>
+      <div class="d-flex align-center">
+        <v-img
+          alt="Vuetify Logo"
+          class="shrink mr-2"
+          contain
+          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
+          transition="scale-transition"
+          width="40"
+        />
 
-    <div class="section">
-      <h2>Show the Accounts</h2>
-      <drizzle-account units="Ether" :precision="2" />
-    </div>
+        <v-img
+          alt="Vuetify Name"
+          class="shrink mt-1 hidden-sm-and-down"
+          contain
+          min-width="100"
+          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
+          width="100"
+        />
+      </div>
 
-    <div class="section">
-      <h2>Block Paper Scissors</h2>
-      <BlockPaperScissors />
-    </div>
+      <v-spacer></v-spacer>
 
-    <div class="section">
-      <h2>Tutorial Token</h2>
-      <TutorialToken />
-    </div>
+      <v-btn
+        href="https://github.com/vuetifyjs/vuetify/releases/latest"
+        target="_blank"
+        text
+      >
+        <span class="mr-2">Latest Release</span>
+        <v-icon>mdi-open-in-new</v-icon>
+      </v-btn>
+    </v-app-bar>
 
-    <div class="section">
-      <h2>Simple Storage</h2>
-      <SimpleStorage />
-    </div>
+    <v-main>
+      <div v-if="isDrizzleInitialized" id="app">
 
-    <div class="section">
-      <h2>Complex Storage</h2>
-      <ComplexStorage />
-    </div>
-  </div>
+        <div class="section">
+          <h2>Show the Accounts</h2>
+          <drizzle-account units="Ether" :precision="2" />
+        </div>
 
-  <div v-else>Loading...</div>
+        <div class="section">
+          <h2>Block Paper Scissors</h2>
+          <BlockPaperScissors />
+        </div>
+
+      </div>
+      <div v-else>Loading...</div>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-import TutorialToken from './TutorialToken'
-import BlockPaperScissors from './BlockPaperScissors'
-import SimpleStorage from './SimpleStorage'
-import ComplexStorage from './ComplexStorage'
-import { mapGetters } from 'vuex'
+import TutorialToken from "./TutorialToken";
+import BlockPaperScissors from "./BlockPaperScissors";
+import SimpleStorage from "./SimpleStorage";
+import ComplexStorage from "./ComplexStorage";
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'app',
+  name: "app",
   components: {
     ComplexStorage,
     TutorialToken,
     BlockPaperScissors,
-    SimpleStorage
+    SimpleStorage,
   },
 
-  computed: mapGetters('drizzle', ['isDrizzleInitialized'])
-}
+  computed: mapGetters("drizzle", ["isDrizzleInitialized"]),
+};
 </script>
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
