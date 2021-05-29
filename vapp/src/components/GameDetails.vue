@@ -5,6 +5,7 @@
       <v-container>
         <v-row>First Player: {{ gameData.firstPlayer }}</v-row>
         <v-row>Second Player: {{ gameData.secondPlayer }}</v-row>
+        <v-row>Game Id: {{ gameId }}</v-row>
       </v-container>
     </v-card-text>
   </v-card>
@@ -44,7 +45,6 @@ export default {
       const arg = {
         contract: this.contractName,
         method: this.method,
-        methodArgs: this.methodArgs,
         toUtf8: this.toUtf8,
         toAscii: this.toAscii,
       };

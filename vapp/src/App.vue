@@ -32,7 +32,7 @@
       <v-spacer></v-spacer>
 
       <v-btn
-        href="https://github.com/ckoopmann/BlockPaperScissors"
+        href="https://github.com/ckoopmann/GameOverview"
         target="_blank"
         text
       >
@@ -44,15 +44,20 @@
     <v-main>
       <div v-if="isDrizzleInitialized" id="app">
 
+        <div class="section mb-4">
+          <NewGame />
+        </div>
+
+        <div class="section">
+          <GameOverview />
+        </div>
+
+
         <div class="section">
           <h2>Show the Accounts</h2>
           <drizzle-account units="Ether" :precision="2" />
         </div>
 
-        <div class="section">
-          <h2>Block Paper Scissors</h2>
-          <BlockPaperScissors />
-        </div>
 
       </div>
       <div v-else>Loading...</div>
@@ -61,19 +66,15 @@
 </template>
 
 <script>
-import TutorialToken from "./TutorialToken";
-import BlockPaperScissors from "./BlockPaperScissors";
-import SimpleStorage from "./SimpleStorage";
-import ComplexStorage from "./ComplexStorage";
+import GameOverview from "./components/GameOverview";
+import NewGame from "./components/NewGame";
 import { mapGetters } from "vuex";
 
 export default {
   name: "app",
   components: {
-    ComplexStorage,
-    TutorialToken,
-    BlockPaperScissors,
-    SimpleStorage,
+    GameOverview,
+    NewGame,
   },
 
   computed: mapGetters("drizzle", ["isDrizzleInitialized"]),
