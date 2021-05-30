@@ -26,7 +26,6 @@
           transition="scale-transition"
           width="40"
         />
-
       </div>
 
       <v-spacer></v-spacer>
@@ -43,7 +42,6 @@
 
     <v-main>
       <div v-if="isDrizzleInitialized" id="app">
-
         <div class="section mb-4">
           <NewGame />
         </div>
@@ -51,14 +49,6 @@
         <div class="section">
           <GameOverview />
         </div>
-
-
-        <div class="section">
-          <h2>Show the Accounts</h2>
-          <drizzle-account units="Ether" :precision="2" />
-        </div>
-
-
       </div>
       <div v-else>Loading...</div>
     </v-main>
