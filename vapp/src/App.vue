@@ -31,7 +31,7 @@
       <v-spacer></v-spacer>
 
       <v-btn
-        href="https://github.com/ckoopmann/GameOverview"
+        href="https://github.com/ckoopmann/BlockPaperScissors"
         target="_blank"
         text
       >
