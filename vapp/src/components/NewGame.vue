@@ -10,42 +10,49 @@
         <v-card-title>
           <span class="headline">New Game </span>
         </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12" sm="6" md="4">
-                <v-select
-                  :items="['Block', 'Paper', 'Scissors']"
-                  label="Move"
-                  required
-                ></v-select>
-              </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  label="Secret"
-                  hint="Will be hashed and used to encrypt your Move"
-                  persistent-hint
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  label="Opponent Address"
-                  hint="Address of the account who you want to challenge for a game"
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="dialog = false">
-            Close
-          </v-btn>
-          <v-btn color="blue darken-1" text @click="dialog = false">
-            Create Game
-          </v-btn>
-        </v-card-actions>
+        <form @submit.prevent="submit">
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="6">
+                  <v-select
+                    :items="['Block', 'Paper', 'Scissors']"
+                    label="Move"
+                    v-model="move"
+                    required
+                  ></v-select>
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field
+                    label="Secret"
+                    hint="Copy / Remember this value to reveal/decrypt your move later"
+                    v-model="secret"
+                    required
+                    persistent-hint
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    label="Opponent Address"
+                    hint="Address of the account who you want to challenge for a game"
+                    v-model="opponent"
+                    :rules="[validAddress, notNullAddress, distinctAddress]"
+                    required
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="close">
+              Close
+            </v-btn>
+            <v-btn color="blue darken-1" text type="submit">
+              Create Game
+            </v-btn>
+          </v-card-actions>
+        </form>
       </v-card>
     </v-dialog>
   </v-row>
@@ -60,9 +67,12 @@ export default {
     return {
       dialog: false,
       contractName: "BlockPaperScissors",
-      method: "getPlayerGames",
+      method: "startGame",
       toUtf8: false,
       toAscii: false,
+      opponent: "",
+      secret: "",
+      move: "",
     };
   },
 
@@ -70,29 +80,51 @@ export default {
 
   computed: {
     ...mapGetters("contracts", ["getContractData", "contractInstances"]),
-    ...mapGetters("drizzle", ["isDrizzleInitialized"]),
-
-    methodArgs() {
-      return [this.activeAccount];
-    },
+    ...mapGetters("drizzle", ["drizzleInstance", "isDrizzleInitialized"]),
+    ...mapGetters("accounts", ["activeAccount"]),
 
     isStale() {
       return !this.contractInstances[this.contractName].synced;
     },
 
-    gameIds() {
-      const arg = {
-        contract: this.contractName,
-        method: this.method,
-        toUtf8: this.toUtf8,
-        toAscii: this.toAscii,
-      };
-      let contractData = this.getContractData(arg);
+    utils() {
+      return this.drizzleInstance.web3.utils;
+    },
 
-      if (contractData === "loading") {
-        return [];
-      }
-      return contractData;
+    contract() {
+      return this.drizzleInstance.contracts[this.contractName];
+    },
+  },
+
+  methods: {
+    async submit(event) {
+      console.log(this.opponent, this.secret, this.move);
+      const hashedSecret = this.utils.sha3(this.secret);
+      console.log(hashedSecret);
+      console.log(this.contract.methods);
+      const encryptedMove = await this.contract.methods
+        .encryptMove(1, hashedSecret)
+        .call();
+      console.log("Encrypted Move: ", encryptedMove);
+
+      const result = await this.contract.methods
+        .startGame(this.opponent, encryptedMove)
+        .send({ from: this.activeAccount });
+      console.log("Result: ", result);
+
+      this.dialog = false;
+    },
+    close() {
+      this.dialog = false;
+    },
+    validAddress(address) {
+      return this.utils.isAddress(address) || "Please provide a valid address";
+    },
+    notNullAddress(address) {
+        return (address !== "0x0000000000000000000000000000000000000000") || "Cannot play against 0 address";
+    },
+    distinctAddress(address) {
+        return (address != this.activeAccount) || "Cannot play against yourself";
     },
   },
 };
