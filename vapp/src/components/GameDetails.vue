@@ -5,7 +5,10 @@
     <v-card-text>
       <v-container>
         <v-row>Opponent: {{ opponent }}</v-row>
-        <v-row ><h3>{{ statusMessage }}</h3></v-row>
+        <v-row
+          ><h3>{{ statusMessage }}</h3></v-row
+        >
+        <component v-if="isUsersTurn" :is="actionComponent" :gameId="gameId"></component>
       </v-container>
     </v-card-text>
   </v-card>
@@ -13,6 +16,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import MakeMove from "./dialogues/MakeMove";
 
 // Mappings of solidity enum indexes on label
 const states = ["None", "Started", "Played", "Evaluated"];
@@ -20,6 +24,7 @@ const moves = ["None", "Block", "Paper", "Scissors"];
 const results = ["None", "Player 1 Wins", "Player 2 Wins", "Draw"];
 
 export default {
+  components: { MakeMove },
   props: { gameId: { type: String, required: true } },
   data() {
     return {
@@ -85,13 +90,16 @@ export default {
     },
 
     statusMessage() {
-        if(this.isUsersTurn){
-            return "Its your turn";
-        }
-        else {
-            return "Waiting for opponent";
-        }
-    }
+      if (this.isUsersTurn) {
+        return "Its your turn";
+      } else {
+        return "Waiting for opponent";
+      }
+    },
+
+    actionComponent() {
+      return "MakeMove";
+    },
   },
   methods: {
     parseAddress(address) {
