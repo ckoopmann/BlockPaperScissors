@@ -8,7 +8,11 @@
         <v-row
           ><h3>{{ statusMessage }}</h3></v-row
         >
-        <component v-if="isUsersTurn" :is="actionComponent" :gameId="gameId"></component>
+        <component
+          v-if="isUsersTurn"
+          :is="actionComponent"
+          :gameId="gameId"
+        ></component>
       </v-container>
     </v-card-text>
   </v-card>
@@ -17,6 +21,7 @@
 <script>
 import { mapGetters } from "vuex";
 import MakeMove from "./dialogues/MakeMove";
+import RevealMove from "./dialogues/RevealMove";
 
 // Mappings of solidity enum indexes on label
 const states = ["None", "Started", "Played", "Evaluated"];
@@ -24,7 +29,10 @@ const moves = ["None", "Block", "Paper", "Scissors"];
 const results = ["None", "Player 1 Wins", "Player 2 Wins", "Draw"];
 
 export default {
-  components: { MakeMove },
+  components: {
+    MakeMove,
+    RevealMove,
+  },
   props: { gameId: { type: String, required: true } },
   data() {
     return {
@@ -89,15 +97,34 @@ export default {
       }
     },
 
+    gameResult() {
+      if (["None", "Draw"].includes(this.gameData.result)) {
+        return this.gameData.result;
+      } else {
+        const userPlayerNumber = this.userIsFirstPlayer ? "1" : "2";
+        if (this.gameData.result.includes(userPlayerNumber)) {
+          return "You Won";
+        } else {
+          return "You Lost";
+        }
+      }
+    },
+
     statusMessage() {
       if (this.isUsersTurn) {
         return "Its your turn";
       } else {
+        if (this.gameData.state === "Evaluated") {
+          return this.gameResult;
+        }
         return "Waiting for opponent";
       }
     },
 
     actionComponent() {
+      if (this.userIsFirstPlayer) {
+        return "RevealMove";
+      }
       return "MakeMove";
     },
   },
