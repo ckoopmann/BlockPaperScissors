@@ -67,7 +67,7 @@
 
 <script>
 import GameOverview from "./components/GameOverview";
-import NewGame from "./components/NewGame";
+import NewGame from "./components/dialogues/NewGame";
 import { mapGetters } from "vuex";
 
 export default {

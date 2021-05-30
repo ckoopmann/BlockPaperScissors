@@ -60,7 +60,6 @@
 
 <script>
 import { mapGetters } from "vuex";
-import GameDetails from "./GameDetails";
 
 export default {
   data() {
@@ -75,8 +74,6 @@ export default {
       move: "",
     };
   },
-
-  components: { GameDetails },
 
   computed: {
     ...mapGetters("contracts", ["getContractData", "contractInstances"]),
