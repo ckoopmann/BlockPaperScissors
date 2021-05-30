@@ -3,8 +3,7 @@
     <v-card-title> {{ gameData.state }}</v-card-title>
     <v-card-text>
       <v-container>
-        <v-row>First Player: {{ gameData.firstPlayer }}</v-row>
-        <v-row>Second Player: {{ gameData.secondPlayer }}</v-row>
+        <v-row>Opponent: {{ opponent }}</v-row>
         <v-row>Game Id: {{ gameId }}</v-row>
       </v-container>
     </v-card-text>
@@ -63,6 +62,13 @@ export default {
         };
       }
       return contractData;
+    },
+
+    opponent() {
+      if (this.gameData.firstPlayer === "YOU") {
+        return this.gameData.secondPlayer;
+      }
+      return this.gameData.firstPlayer;
     },
   },
   methods: {
