@@ -1,6 +1,3 @@
-import SimpleStorage from './contracts/SimpleStorage.json'
-import ComplexStorage from './contracts/ComplexStorage.json'
-import TutorialToken from './contracts/TutorialToken.json'
 import BlockPaperScissors from './contracts/BlockPaperScissors.json'
 
 const options = {
@@ -11,10 +8,7 @@ const options = {
       url: 'ws://127.0.0.1:9545'
     }
   },
-  contracts: [SimpleStorage, ComplexStorage, TutorialToken, BlockPaperScissors],
-  events: {
-    SimpleStorage: ['StorageSet']
-  },
+  contracts: [BlockPaperScissors],
   polls: {
     accounts: 15000
   }
