@@ -1,10 +1,11 @@
 <template>
   <v-card>
     <v-card-title> {{ gameData.state }}</v-card-title>
+    <v-card-subtitle>Id: {{ gameId }}</v-card-subtitle>
     <v-card-text>
       <v-container>
         <v-row>Opponent: {{ opponent }}</v-row>
-        <v-row>Game Id: {{ gameId }}</v-row>
+        <v-row ><h3>{{ statusMessage }}</h3></v-row>
       </v-container>
     </v-card-text>
   </v-card>
@@ -64,12 +65,33 @@ export default {
       return contractData;
     },
 
+    userIsFirstPlayer() {
+      return this.gameData.firstPlayer === "YOU";
+    },
+
     opponent() {
-      if (this.gameData.firstPlayer === "YOU") {
+      if (this.userIsFirstPlayer) {
         return this.gameData.secondPlayer;
       }
       return this.gameData.firstPlayer;
     },
+
+    isUsersTurn() {
+      if (this.userIsFirstPlayer) {
+        return this.gameData.state === "Played";
+      } else {
+        return this.gameData.state === "Started";
+      }
+    },
+
+    statusMessage() {
+        if(this.isUsersTurn){
+            return "Its your turn";
+        }
+        else {
+            return "Waiting for opponent";
+        }
+    }
   },
   methods: {
     parseAddress(address) {
