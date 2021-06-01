@@ -40,31 +40,18 @@
     </v-app-bar>
 
     <v-main>
-      <div v-if="isDrizzleInitialized" id="app">
-        <div class="section mb-4">
-          <NewGame />
-        </div>
-
-        <div class="section">
-          <GameOverview />
-        </div>
+      <div class="section">
+        <router-view />
       </div>
-      <div v-else>Loading...</div>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import GameOverview from "./components/GameOverview";
-import NewGame from "./components/dialogues/NewGame";
 import { mapGetters } from "vuex";
 
 export default {
   name: "app",
-  components: {
-    GameOverview,
-    NewGame,
-  },
 
   computed: mapGetters("drizzle", ["isDrizzleInitialized"]),
 };

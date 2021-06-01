@@ -9,7 +9,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import GameDetails from "./GameDetails";
+import GameDetails from "../components/GameDetails";
 
 export default {
   data() {
