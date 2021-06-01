@@ -1,31 +1,30 @@
 <template>
   <v-app-bar app color="primary" dark>
-    <div class="d-flex align-center">
-      <v-img
-        class="shrink mr-2"
-        contain
-        src="assets/block.png"
-        transition="scale-transition"
-        width="40"
-      />
-      <v-img
-        class="shrink mr-2"
-        contain
-        src="assets/paper.png"
-        transition="scale-transition"
-        width="40"
-      />
-      <v-img
-        class="shrink mr-2"
-        contain
-        src="assets/scissors.png"
-        transition="scale-transition"
-        width="40"
-      />
-    </div>
-
-    <v-app-bar-title>Block Paper Scissors</v-app-bar-title>
-
+    <router-link to="/">
+      <div class="d-flex align-center">
+        <v-img
+          class="shrink mr-2"
+          contain
+          src="assets/block.png"
+          transition="scale-transition"
+          width="40"
+        />
+        <v-img
+          class="shrink mr-2"
+          contain
+          src="assets/paper.png"
+          transition="scale-transition"
+          width="40"
+        />
+        <v-img
+          class="shrink mr-2"
+          contain
+          src="assets/scissors.png"
+          transition="scale-transition"
+          width="40"
+        />
+      </div>
+    </router-link>
     <v-spacer></v-spacer>
 
     <NewGame />
