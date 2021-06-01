@@ -3,7 +3,6 @@
     <v-app-bar app color="primary" dark>
       <div class="d-flex align-center">
         <v-img
-          alt="Vuetify Logo"
           class="shrink mr-2"
           contain
           src="assets/block.png"
@@ -11,7 +10,6 @@
           width="40"
         />
         <v-img
-          alt="Vuetify Logo"
           class="shrink mr-2"
           contain
           src="assets/paper.png"
@@ -19,7 +17,6 @@
           width="40"
         />
         <v-img
-          alt="Vuetify Logo"
           class="shrink mr-2"
           contain
           src="assets/scissors.png"
