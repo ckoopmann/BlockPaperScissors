@@ -1,7 +1,9 @@
 <template>
-  <div v-if="isDrizzleInitialized">
-    <h2>Your Games</h2>
+  <div v-if="isDrizzleInitialized" class="game-list">
+    <h2 class="mt-4">Your Games</h2>
+        <v-row class="fill-height" align="center" justify="center">
     <GameDetails v-for="(id, index) in gameIds" :key="index" :gameId="id" />
+        </v-row>
   </div>
 
   <div v-else>Loading...</div>
@@ -68,5 +70,11 @@ export default {
   /* Release the inner Jackson Pollock */
   border: 1px solid red;
   background-color: yellow;
+}
+.game-list {
+  background-image: url(/assets/ethereum.jpg);
+  background-size: cover; /* <------ */
+  background-repeat: no-repeat;
+  background-position: center center;
 }
 </style>

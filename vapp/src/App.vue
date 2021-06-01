@@ -1,11 +1,7 @@
 <template>
-  <v-app>
+  <v-app id="app">
     <TheHeader />
-    <v-main>
-      <div class="section">
-        <router-view />
-      </div>
-    </v-main>
+    <router-view style="height:100%" />
   </v-app>
 </template>
 
@@ -29,5 +25,6 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+  height: 100vh;
 }
 </style>
