@@ -28,8 +28,16 @@
 
     <v-spacer></v-spacer>
 
+    <NewGame />
+
+    <v-spacer></v-spacer>
+
     <v-btn to="games" text>
       <span class="mr-2">Your Games</span>
+    </v-btn>
+
+    <v-btn to="/" text>
+      <span class="mr-2">About</span>
     </v-btn>
 
     <v-btn
@@ -37,8 +45,14 @@
       target="_blank"
       text
     >
-      <span class="mr-2">Github Repo</span>
-      <v-icon>mdi-open-in-new</v-icon>
+      <v-icon>mdi-github</v-icon>
     </v-btn>
   </v-app-bar>
 </template>
+
+<script>
+import NewGame from "./dialogues/NewGame.vue";
+export default {
+  components: { NewGame },
+};
+</script>
