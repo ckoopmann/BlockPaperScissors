@@ -1,20 +1,22 @@
 <template>
-  <v-card>
-    <v-card-title> {{ gameData.state }}</v-card-title>
-    <v-card-subtitle>Id: {{ gameId }}</v-card-subtitle>
+  <v-card class="mx-auto" max-width="800">
+    <v-card-title primary-title class="justify-center">
+      {{ gameData.state }}</v-card-title
+    >
     <v-card-text>
       <v-container>
-        <v-row>Opponent: {{ opponent }}</v-row>
-        <v-row
-          ><h3>{{ statusMessage }}</h3></v-row
-        >
-        <component
-          v-if="isUsersTurn"
-          :is="actionComponent"
-          :gameId="gameId"
-        ></component>
+        <v-row class="justify-center">Opponent: {{ opponent }}</v-row>
       </v-container>
     </v-card-text>
+    <v-card-actions>
+      <component
+        :is="actionComponent"
+        :gameId="gameId"
+        v-if="gameDataLoaded"
+        class="mb-4"
+      ></component>
+      <h2 v-else>Loading</h2>
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -22,6 +24,10 @@
 import { mapGetters } from "vuex";
 import MakeMove from "./dialogues/MakeMove";
 import RevealMove from "./dialogues/RevealMove";
+import WonGame from "./dialogues/WonGame";
+import LostGame from "./dialogues/LostGame";
+import Draw from "./dialogues/Draw";
+import WaitForOpponent from "./dialogues/WaitForOpponent";
 
 // Mappings of solidity enum indexes on label
 const states = ["None", "Started", "Played", "Evaluated"];
@@ -32,6 +38,10 @@ export default {
   components: {
     MakeMove,
     RevealMove,
+    WonGame,
+    LostGame,
+    Draw,
+    WaitForOpponent,
   },
   props: { gameId: { type: String, required: true } },
   data() {
@@ -52,6 +62,10 @@ export default {
 
     isStale() {
       return !this.contractInstances[this.contractName].synced;
+    },
+
+    gameDataLoaded() {
+      return this.gameData != null && this.gameData !== "loading";
     },
 
     gameData() {
@@ -103,9 +117,9 @@ export default {
       } else {
         const userPlayerNumber = this.userIsFirstPlayer ? "1" : "2";
         if (this.gameData.result.includes(userPlayerNumber)) {
-          return "You Won";
+          return "WonGame";
         } else {
-          return "You Lost";
+          return "LostGame";
         }
       }
     },
@@ -122,10 +136,15 @@ export default {
     },
 
     actionComponent() {
-      if (this.userIsFirstPlayer) {
-        return "RevealMove";
+      if (this.isUsersTurn) {
+        if (this.userIsFirstPlayer) {
+          return "RevealMove";
+        }
+        return "MakeMove";
+      } else if (this.gameResult === "None") {
+        return "WaitForOpponent";
       }
-      return "MakeMove";
+      return this.gameResult;
     },
   },
   methods: {
@@ -148,11 +167,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.stale {
-  /* Release the inner Jackson Pollock */
-  border: 1px solid red;
-  background-color: yellow;
-}
-</style>
