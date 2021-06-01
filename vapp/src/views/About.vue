@@ -2,6 +2,7 @@
   <div class="about">
     <h1 class="mb-4">Block Paper Scissors</h1>
     <h4 class="mb-4">Your favourite game - on chain</h4>
+    <v-carousel :continuous="false" hide-delimiters>
 
     <AboutElement title="How it all began" class="mb-4">
       You have probably played it many times before, a game as simple as it
@@ -64,6 +65,7 @@
         </li>
       </ol>
     </AboutElement>
+     </v-carousel>
   </div>
 </template>
 
