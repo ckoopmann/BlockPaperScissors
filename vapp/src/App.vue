@@ -25,6 +25,8 @@
         />
       </div>
 
+      <v-app-bar-title>Block Paper Scissors</v-app-bar-title>
+
       <v-spacer></v-spacer>
 
       <v-btn
