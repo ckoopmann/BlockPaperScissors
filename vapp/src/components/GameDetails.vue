@@ -1,7 +1,7 @@
 <template>
   <v-card class="mx-auto" max-width="800">
     <v-card-title primary-title class="justify-center">
-      {{ gameData.state }}</v-card-title
+      {{ state }}</v-card-title
     >
     <v-card-text>
       <v-container>
@@ -29,11 +29,6 @@ import LostGame from "./dialogues/LostGame";
 import Draw from "./dialogues/Draw";
 import WaitForOpponent from "./dialogues/WaitForOpponent";
 
-// Mappings of solidity enum indexes on label
-const states = ["None", "Started", "Played", "Evaluated"];
-const moves = ["None", "Block", "Paper", "Scissors"];
-const results = ["None", "Player 1 Wins", "Player 2 Wins", "Draw"];
-
 export default {
   components: {
     MakeMove,
@@ -53,43 +48,22 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("drizzle", ["isDrizzleInitialized"]),
-    ...mapGetters("contracts", ["getContractData", "contractInstances"]),
-    ...mapGetters("accounts", ["activeAccount"]),
-    methodArgs() {
-      return [this.gameId];
-    },
-
-    isStale() {
-      return !this.contractInstances[this.contractName].synced;
-    },
+    ...mapGetters("contractModule", ["gameDataAll"]),
 
     gameDataLoaded() {
-      return this.gameData != null && this.gameData !== "loading";
+      return this.gameData != null;
     },
 
     gameData() {
-      const arg = {
-        contract: this.contractName,
-        method: this.method,
-        toUtf8: this.toUtf8,
-        toAscii: this.toAscii,
-      };
-      let contractData = this.getContractData(arg);
+      return this.gameDataAll[this.gameId];
+    },
 
-      if (contractData != "loading") {
-        return {
-          state: states[parseInt(contractData["0"])],
-          firstPlayer: this.parseAddress(contractData["1"]),
-          secondPlayer: this.parseAddress(contractData["2"]),
-          firstMoveEncrypted: contractData["3"],
-          firstMoveSecret: contractData["4"],
-          firstMove: moves[parseInt(contractData["5"])],
-          secondMove: moves[parseInt(contractData["6"])],
-          result: results[parseInt(contractData["7"])],
-        };
+    state() {
+      if ("state" in this.gameData) {
+        return this.gameData.state;
+      } else {
+        return "Loading";
       }
-      return contractData;
     },
 
     userIsFirstPlayer() {
@@ -146,24 +120,6 @@ export default {
       }
       return this.gameResult;
     },
-  },
-  methods: {
-    parseAddress(address) {
-      if (address === this.activeAccount) {
-        return "YOU";
-      } else {
-        return address;
-      }
-    },
-  },
-  created() {
-    const { contractName, method, methodArgs } = this;
-
-    this.$store.dispatch("drizzle/REGISTER_CONTRACT", {
-      contractName,
-      method,
-      methodArgs,
-    });
   },
 };
 </script>
