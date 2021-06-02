@@ -6,14 +6,30 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import TheHeader from "./components/TheHeader.vue";
 
 export default {
   name: "app",
   components: { TheHeader },
 
-  computed: mapGetters("drizzle", ["isDrizzleInitialized"]),
+  computed: {
+    ...mapGetters("drizzle", ["isDrizzleInitialized"]),
+    ...mapGetters("web3Module", ["activeAccount"]),
+    ...mapGetters("contractModule", ["contractInstance", "gameIds"]),
+  },
+  methods: {
+    ...mapActions("web3Module", ["initializeWeb3"]),
+    ...mapActions("contractModule", ["initializeContract", "loadGames"]),
+  },
+  async mounted() {
+    await this.initializeWeb3();
+    this.initializeContract();
+    console.log("Active Account: ", this.activeAccount);
+    console.log("contract instance: ", this.contractInstance);
+    await this.loadGames();
+    console.log("Game Ids", this.gameIds);
+  },
 };
 </script>
 

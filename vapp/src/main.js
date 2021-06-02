@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import App from './App.vue'
-import Vuex from 'vuex'
 
 // Todo: Update this when publishing
 // import drizzleVuePlugin from '@drizzle/vue-plugin'
@@ -9,9 +8,8 @@ import drizzleVuePlugin from '@drizzle/vue-plugin'
 import drizzleOptions from './drizzleOptions'
 import vuetify from './plugins/vuetify'
 import router from './router'
+import store from './store'
 
-Vue.use(Vuex)
-const store = new Vuex.Store({ state: {} })
 
 Vue.use(drizzleVuePlugin, { store, drizzleOptions })
 
