@@ -59,56 +59,23 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   data() {
     return {
       dialog: false,
-      contractName: "BlockPaperScissors",
-      method: "startGame",
-      toUtf8: false,
-      toAscii: false,
       opponent: "",
       secret: "",
       move: "",
     };
   },
 
-  computed: {
-    ...mapGetters("contracts", ["getContractData", "contractInstances"]),
-    ...mapGetters("drizzle", ["drizzleInstance", "isDrizzleInitialized"]),
-    ...mapGetters("accounts", ["activeAccount"]),
-
-    isStale() {
-      return !this.contractInstances[this.contractName].synced;
-    },
-
-    utils() {
-      return this.drizzleInstance.web3.utils;
-    },
-
-    contract() {
-      return this.drizzleInstance.contracts[this.contractName];
-    },
-  },
-
   methods: {
+    ...mapActions("contractModule", ["startGame"]),
     async submit(event) {
-      console.log(this.opponent, this.secret, this.move);
-      const hashedSecret = this.utils.sha3(this.secret);
-      console.log(hashedSecret);
-      console.log(this.contract.methods);
-      const encryptedMove = await this.contract.methods
-        .encryptMove(1, hashedSecret)
-        .call();
-      console.log("Encrypted Move: ", encryptedMove);
-
-      const result = await this.contract.methods
-        .startGame(this.opponent, encryptedMove)
-        .send({ from: this.activeAccount });
-      console.log("Result: ", result);
-
+      const { opponent, secret, move } = this;
+      await this.startGame({ opponent, secret, move });
       this.dialog = false;
     },
     close() {
@@ -118,10 +85,13 @@ export default {
       return this.utils.isAddress(address) || "Please provide a valid address";
     },
     notNullAddress(address) {
-        return (address !== "0x0000000000000000000000000000000000000000") || "Cannot play against 0 address";
+      return (
+        address !== "0x0000000000000000000000000000000000000000" ||
+        "Cannot play against 0 address"
+      );
     },
     distinctAddress(address) {
-        return (address != this.activeAccount) || "Cannot play against yourself";
+      return address != this.activeAccount || "Cannot play against yourself";
     },
   },
 };

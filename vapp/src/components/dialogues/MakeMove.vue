@@ -41,9 +41,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-
-const moveMapping = { Block: 1, Paper: 2, Scissors: 3 };
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   props: {
@@ -55,16 +53,11 @@ export default {
   data() {
     return {
       dialog: false,
-      contractName: "BlockPaperScissors",
       move: "",
     };
   },
 
   computed: {
-    ...mapGetters("contracts", ["getContractData", "contractInstances"]),
-    ...mapGetters("drizzle", ["drizzleInstance", "isDrizzleInitialized"]),
-    ...mapGetters("accounts", ["activeAccount"]),
-
     isStale() {
       return !this.contractInstances[this.contractName].synced;
     },
@@ -79,16 +72,10 @@ export default {
   },
 
   methods: {
+    ...mapActions("contractModule", ["makeMove"]),
     async submit(event) {
-      console.log(this.gameId, this.move);
-
-      const moveNumber = moveMapping[this.move];
-
-      const result = await this.contract.methods
-        .makeMove(this.gameId, moveNumber)
-        .send({ from: this.activeAccount });
-      console.log("Result: ", result);
-
+      const { gameId, move } = this;
+      this.makeMove({ gameId, move });
       this.dialog = false;
     },
     close() {
