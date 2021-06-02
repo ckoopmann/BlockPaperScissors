@@ -63,14 +63,14 @@ contract("TestGame", (accounts) => {
 
         it(`${firstPlayerMove} / ${secondPlayerMove} - Correct Data is returned for evaluated game`, async function () {
           const gameData = await this.contract.getGameData.call(gameId);
-          const state = gameData[0]
-          const firstPlayer = gameData[1]
-          const secondPlayer = gameData[2]
-          const firstMoveEncrypted = gameData[3]
-          const firstMoveSecret = gameData[4]
-          const firstMove = gameData[5]
-          const secondMove = gameData[6]
-          const result = gameData[7]
+          const state = gameData[0];
+          const firstPlayer = gameData[1];
+          const secondPlayer = gameData[2];
+          const firstMoveEncrypted = gameData[3];
+          const firstMoveSecret = gameData[4];
+          const firstMove = gameData[5];
+          const secondMove = gameData[6];
+          const result = gameData[7];
 
           assert.equal(state, 3, "Wrong state");
           assert.equal(firstPlayer, owner, "Wrong first player");
@@ -78,7 +78,11 @@ contract("TestGame", (accounts) => {
           assert.equal(firstMoveEncrypted, hashedMove, "Wrong encryptedMove");
           assert.equal(firstMoveSecret, secret, "Wrong secret");
           assert.equal(firstMove, firstPlayerMove, "Wrong first player move");
-          assert.equal(secondMove, secondPlayerMove, "Wrong second player move");
+          assert.equal(
+            secondMove,
+            secondPlayerMove,
+            "Wrong second player move"
+          );
           assert.equal(result, expectedResult, "Wrong game result");
         });
       }
@@ -91,6 +95,34 @@ contract("TestGame", (accounts) => {
           gameIds.length,
           moves.length ** 2,
           "Wrong number of player games"
+        );
+      });
+
+      it(`should be able to get previous opponents for player ${playerAddress}`, async function () {
+        const opponents = await this.contract.getPreviousOpponents.call(
+          playerAddress
+        );
+        assert.equal(
+          opponents.length,
+          moves.length ** 2,
+          "Wrong number of opponents"
+        );
+
+        const uniqueOpponents = opponents.filter(
+          (x, i, a) => a.indexOf(x) === i
+        );
+        assert.equal(
+          uniqueOpponents.length,
+          1,
+          "Wrong number of uniqueOpponents"
+        );
+
+        const returnedOpponent = uniqueOpponents[0];
+        const expectedOpponent = playerAddress == owner ? opponent : owner;
+        assert.equal(
+          returnedOpponent,
+          expectedOpponent,
+          "Wrong opponent returned"
         );
       });
     });
