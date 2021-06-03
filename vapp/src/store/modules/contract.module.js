@@ -4,6 +4,15 @@ const contractJson = require("../../contracts/BlockPaperScissors.json");
 const states = ["None", "Started", "Played", "Evaluated"];
 const moves = ["None", "Block", "Paper", "Scissors"];
 const results = ["None", "Player 1 Wins", "Player 2 Wins", "Draw"];
+const moveMapping = { Block: 1, Paper: 2, Scissors: 3 };
+
+function parseAddress(address, activeAccount) {
+  if (address === activeAccount) {
+    return "YOU";
+  } else {
+    return address;
+  }
+}
 
 const contractModule = {
   namespaced: true,
@@ -20,7 +29,7 @@ const contractModule = {
     setGameIds(state, gameIds) {
       state.gameIds = gameIds;
     },
-    setGameData(state, gameId, gameData) {
+    setGameData(state, { gameId, gameData }) {
       state.gameData[gameId] = gameData;
     },
   },
@@ -45,17 +54,18 @@ const contractModule = {
       console.log("Setting game ids to: ", gameIds);
       commit("setGameIds", gameIds);
       for (var gameId of gameIds) {
-        dispatch("loadSingleGame", gameId);
+        await dispatch("loadSingleGame", gameId);
       }
     },
     async loadSingleGame({ getters, commit, rootGetters }, gameId) {
       const contract = getters["contractInstance"];
       const contractData = await contract.methods.getGameData(gameId).call();
+      const activeAccount = rootGetters["web3Module/activeAccount"];
 
       const gameData = {
         state: states[parseInt(contractData["0"])],
-        firstPlayer: contractData["1"],
-        secondPlayer: contractData["2"],
+        firstPlayer: parseAddress(contractData["1"], activeAccount),
+        secondPlayer: parseAddress(contractData["2"], activeAccount),
         firstMoveEncrypted: contractData["3"],
         firstMoveSecret: contractData["4"],
         firstMove: moves[parseInt(contractData["5"])],
@@ -64,7 +74,51 @@ const contractModule = {
       };
 
       console.log(`Setting game data for ${gameId} to: `, gameData);
-      commit("setGameData", gameId, gameData);
+      commit("setGameData", { gameId, gameData });
+    },
+    async makeMove({ getters, rootGetters }, { gameId, move }) {
+      const contract = getters["contractInstance"];
+      const activeAccount = rootGetters["web3Module/activeAccount"];
+      console.log(gameId, move);
+
+      const moveNumber = moveMapping[move];
+
+      const result = await contract.methods
+        .makeMove(gameId, moveNumber)
+        .send({ from: activeAccount });
+      console.log("Result: ", result);
+    },
+    async startGame({ getters, rootGetters }, { opponent, secret, move }) {
+      const web3 = rootGetters["web3Module/web3Instance"];
+      const contract = getters["contractInstance"];
+      const activeAccount = rootGetters["web3Module/activeAccount"];
+
+      console.log(opponent, secret, move);
+      const hashedSecret = web3.utils.sha3(secret);
+      console.log(hashedSecret);
+      console.log(contract.methods);
+      const encryptedMove = await contract.methods
+        .encryptMove(1, hashedSecret)
+        .call();
+      console.log("Encrypted Move: ", encryptedMove);
+
+      const result = await contract.methods
+        .startGame(opponent, encryptedMove)
+        .send({ from: activeAccount });
+      console.log("Result: ", result);
+    },
+    async evaluateGame({ getters, rootGetters }, {gameId, secret}) {
+      const web3 = rootGetters["web3Module/web3Instance"];
+      const contract = getters["contractInstance"];
+      const activeAccount = rootGetters["web3Module/activeAccount"];
+
+      const hashedSecret = web3.utils.sha3(secret);
+      console.log(hashedSecret);
+
+      const result = await contract.methods
+        .evaluateGame(gameId, hashedSecret)
+        .send({ from: activeAccount });
+      console.log("Evaluate Game Result: ", result);
     },
   },
   getters: {
@@ -74,8 +128,16 @@ const contractModule = {
     gameIds(state) {
       return state.gameIds;
     },
-    gameData(state) {
+    gameDataAll(state) {
       return state.gameData;
+    },
+    loadedGameIds(state) {
+      console.log("GameIds: ", gameIds);
+      const loadedGames = state.gameIds.filter(
+        (gameId) => gameId in state.gameData
+      );
+      console.log("Loaded Games: ", loadedGames);
+      return loadedGames;
     },
   },
 };
