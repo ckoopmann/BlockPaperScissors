@@ -97,34 +97,6 @@ contract("TestGame", (accounts) => {
           "Wrong number of player games"
         );
       });
-
-      it(`should be able to get previous opponents for player ${playerAddress}`, async function () {
-        const opponents = await this.contract.getPreviousOpponents.call(
-          playerAddress
-        );
-        assert.equal(
-          opponents.length,
-          moves.length ** 2,
-          "Wrong number of opponents"
-        );
-
-        const uniqueOpponents = opponents.filter(
-          (x, i, a) => a.indexOf(x) === i
-        );
-        assert.equal(
-          uniqueOpponents.length,
-          1,
-          "Wrong number of uniqueOpponents"
-        );
-
-        const returnedOpponent = uniqueOpponents[0];
-        const expectedOpponent = playerAddress == owner ? opponent : owner;
-        assert.equal(
-          returnedOpponent,
-          expectedOpponent,
-          "Wrong opponent returned"
-        );
-      });
     });
   });
 });

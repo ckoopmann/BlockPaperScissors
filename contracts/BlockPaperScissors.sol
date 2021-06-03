@@ -113,22 +113,4 @@ contract BlockPaperScissors {
         return (uint8(game.state), game.firstPlayer, game.secondPlayer, game.firstMoveEncrypted, game.firstMoveSecret, uint8(game.firstMove), uint8(game.secondMove), uint8(game.result));
     }
 
-    function getPreviousOpponents(address player) public view returns(address[] memory opponents){
-        bytes32[] storage gameIds = playerGames[player];
-        bytes32 gameId;
-        address opponent;
-        opponents = new address[](gameIds.length);
-
-        for(uint i=0; i<gameIds.length; i++){
-            gameId = gameIds[i];
-            Game storage gameData = games[gameId];
-            if(player == gameData.firstPlayer){
-                opponent = gameData.secondPlayer;
-            }
-            else{
-                opponent = gameData.firstPlayer;
-            }
-            opponents[i] = opponent;
-        }
-    }
 }
