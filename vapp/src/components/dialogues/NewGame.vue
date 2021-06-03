@@ -32,13 +32,14 @@
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12">
-                  <v-text-field
+                  <v-combobox
                     label="Opponent Address"
                     hint="Address of the account who you want to challenge for a game"
                     v-model="opponent"
                     :rules="[validAddress, notNullAddress, distinctAddress]"
+                    :items="previousOpponents"
                     required
-                  ></v-text-field>
+                    ></v-combobox>
                 </v-col>
               </v-row>
             </v-container>
@@ -72,6 +73,7 @@ export default {
   },
 
   computed: mapGetters("web3Module", ["activeAccount", "web3Instance"]),
+  computed: mapGetters("contractModule", ["previousOpponents"]),
 
   methods: {
     ...mapActions("contractModule", ["startGame"]),

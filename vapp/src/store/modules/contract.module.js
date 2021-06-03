@@ -152,13 +152,23 @@ const contractModule = {
         };
       }
     },
-    loadedGameIds(state) {
-      console.log("GameIds: ", gameIds);
-      const loadedGames = state.gameIds.filter(
-        (gameId) => gameId in state.gameData
+    previousOpponents(state) {
+      if (!state.gameDataLoaded) {
+        return [];
+      }
+      const opponents = state.gameIds.map((id) => {
+        const data = state.gameData[id];
+        if (data.firstPlayer == "YOU") {
+          return data.secondPlayer;
+        } else {
+          return data.firstPlayer;
+        }
+      });
+      console.log("All opponents", opponents);
+      const uniqueOpponents = opponents.filter(
+        (x, i, a) => x != null && a.indexOf(x) === i
       );
-      console.log("Loaded Games: ", loadedGames);
-      return loadedGames;
+      return uniqueOpponents;
     },
   },
 };
