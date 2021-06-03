@@ -6,8 +6,8 @@
     <v-card-text>
       <v-container>
         <v-row class="justify-center">Opponent: {{ opponent }}</v-row>
-        <v-row v-if="userMove" class="justify-center">Your Move: {{ userMove }}</v-row>
-        <v-row v-if="opponentMove" class="justify-center">Opponent Move: {{ opponentMove }}</v-row>
+        <v-row v-if="isEvaluated" class="justify-center">Your Move: {{ userMove }}</v-row>
+        <v-row v-if="isEvaluated" class="justify-center">Opponent Move: {{ opponentMove }}</v-row>
       </v-container>
     </v-card-text>
     <v-card-actions>
@@ -97,6 +97,10 @@ export default {
         return this.gameData.state === "Started";
       }
     },
+    
+      isEvaluated(){
+          return this.gameData.state === "Evaluated";
+      },
 
     gameResult() {
       if (["None", "Draw"].includes(this.gameData.result)) {
