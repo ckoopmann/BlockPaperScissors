@@ -8,6 +8,7 @@ contract BlockPaperScissors {
     enum GameResult { None, FirstPlayerWin, SecondPlayerWin, Draw }
     struct Game {
         GameState state;
+        string title;
         address firstPlayer;
         address secondPlayer;
         bytes32 firstMoveEncrypted;
@@ -41,10 +42,11 @@ contract BlockPaperScissors {
         return 0;
     }
 
-    function startGame(address opponent, bytes32 encryptedMove) public returns(bytes32 gameId) {
-        gameId = keccak256(abi.encodePacked(gameCount, msg.sender, opponent));
+    function startGame(string memory title, address opponent, bytes32 encryptedMove) public returns(bytes32 gameId) {
+        gameId = keccak256(abi.encodePacked(gameCount, title, msg.sender, opponent));
         gameCount++;
 
+        games[gameId].title = title;
         games[gameId].state = GameState.Started;
         games[gameId].firstPlayer = msg.sender;
         games[gameId].secondPlayer = opponent;
@@ -108,9 +110,12 @@ contract BlockPaperScissors {
         return playerGames[player];
     }
 
-    function getGameData(bytes32 gameId) public view returns(uint8, address, address, bytes32, bytes32, uint8, uint8, uint8){
+    function getGameData(bytes32 gameId) public view returns(uint8, address, address, bytes32, bytes32, uint8, uint8, uint8, string memory){
         Game storage game = games[gameId];
-        return (uint8(game.state), game.firstPlayer, game.secondPlayer, game.firstMoveEncrypted, game.firstMoveSecret, uint8(game.firstMove), uint8(game.secondMove), uint8(game.result));
+        return (uint8(game.state), game.firstPlayer, game.secondPlayer,
+                game.firstMoveEncrypted, game.firstMoveSecret,
+                uint8(game.firstMove), uint8(game.secondMove),
+                uint8(game.result), game.title);
     }
 
 }

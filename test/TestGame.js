@@ -20,6 +20,7 @@ contract("TestGame", (accounts) => {
 
   describe("BlockPaperScissors", function () {
     let gameId;
+    let title;
     let secret = web3.utils.soliditySha3("123456");
     before(async function () {
       this.contract = await BlockPaperScissors.new({
@@ -40,8 +41,9 @@ contract("TestGame", (accounts) => {
             firstPlayerMove,
             secret
           );
-          gameId = await this.contract.startGame.call(opponent, hashedMove);
-          await this.contract.startGame(opponent, hashedMove);
+          title = `testgame - ${firstPlayerMove} / ${secondPlayerMove}`
+          gameId = await this.contract.startGame.call(title, opponent, hashedMove);
+          await this.contract.startGame(title, opponent, hashedMove);
         });
 
         it(`${firstPlayerMove} / ${secondPlayerMove} - Opponent should be able to make move`, async function () {
@@ -71,6 +73,7 @@ contract("TestGame", (accounts) => {
           const firstMove = gameData[5];
           const secondMove = gameData[6];
           const result = gameData[7];
+          const returnedTitle = gameData[8];
 
           assert.equal(state, 3, "Wrong state");
           assert.equal(firstPlayer, owner, "Wrong first player");
@@ -84,6 +87,7 @@ contract("TestGame", (accounts) => {
             "Wrong second player move"
           );
           assert.equal(result, expectedResult, "Wrong game result");
+          assert.equal(returnedTitle, title, "Wrong game title");
         });
       }
     }
