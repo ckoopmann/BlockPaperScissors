@@ -27,5 +27,7 @@ export default {
   background-size: cover; /* <------ */
   background-repeat: no-repeat;
   background-position: center center;
+  background-attachment: fixed;
+  display: inline-table;
 }
 </style>
