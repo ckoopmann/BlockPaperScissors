@@ -1,20 +1,22 @@
 <template>
   <v-card class="mx-auto" max-width="800">
-      <v-card-title primary-title class="justify-center">
-        {{ title }}</v-card-title
-      >
-      <v-card-text>
-        <v-container>
-          <v-row class="justify-center">Opponent: {{ opponent }}</v-row>
-        </v-container>
-      </v-card-text>
-      <v-card-actions>
-        <component
-          :is="actionComponent"
-          :gameId="gameId"
-          class="mb-4"
-        ></component>
-      </v-card-actions>
+    <v-card-title primary-title class="justify-center">
+      {{ title }}</v-card-title
+    >
+    <v-card-text>
+      <v-container>
+        <v-row class="justify-center">Opponent: {{ opponent }}</v-row>
+        <v-row v-if="userMove" class="justify-center">Your Move: {{ userMove }}</v-row>
+        <v-row v-if="opponentMove" class="justify-center">Opponent Move: {{ opponentMove }}</v-row>
+      </v-container>
+    </v-card-text>
+    <v-card-actions>
+      <component
+        :is="actionComponent"
+        :gameId="gameId"
+        class="mb-4"
+      ></component>
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -40,10 +42,6 @@ export default {
   computed: {
     ...mapGetters("contractModule", ["gameDataSingle"]),
 
-    gameDataLoaded() {
-      return this.gameDataLoadedSingle(this.gameId);
-    },
-
     gameData() {
       return this.gameDataSingle(this.gameId);
     },
@@ -51,6 +49,35 @@ export default {
     title() {
       return this.gameData.title;
     },
+
+    userMove() {
+      let move;
+      if (this.userIsFirstPlayer) {
+        move = this.gameData.firstMove;
+      } else {
+        move = this.gameData.secondMove;
+      }
+      if (move == "None") {
+        return null;
+      } else {
+        return move;
+      }
+    },
+
+    opponentMove() {
+      let move;
+      if (this.userIsFirstPlayer) {
+        move = this.gameData.secondMove;
+      } else {
+        move = this.gameData.firstMove;
+      }
+      if (move == "None") {
+        return null;
+      } else {
+        return move;
+      }
+    },
+
 
     userIsFirstPlayer() {
       return this.gameData.firstPlayer === "YOU";
