@@ -14,8 +14,6 @@ export default {
   components: { TheHeader },
 
   computed: {
-    ...mapGetters("drizzle", ["isDrizzleInitialized"]),
-    ...mapGetters("web3Module", ["activeAccount"]),
     ...mapGetters("contractModule", ["contractInstance", "gameIds"]),
   },
   methods: {
