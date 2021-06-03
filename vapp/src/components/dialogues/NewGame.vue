@@ -39,7 +39,7 @@
                     :rules="[validAddress, notNullAddress, distinctAddress]"
                     :items="previousOpponents"
                     required
-                    ></v-combobox>
+                  ></v-combobox>
                 </v-col>
               </v-row>
             </v-container>
@@ -72,8 +72,10 @@ export default {
     };
   },
 
-  computed: mapGetters("web3Module", ["activeAccount", "web3Instance"]),
-  computed: mapGetters("contractModule", ["previousOpponents"]),
+  computed: {
+    ...mapGetters("web3Module", ["activeAccount", "web3Instance"]),
+    ...mapGetters("contractModule", ["previousOpponents"]),
+  },
 
   methods: {
     ...mapActions("contractModule", ["startGame"]),
@@ -86,7 +88,10 @@ export default {
       this.dialog = false;
     },
     validAddress(address) {
-      return this.web3Instance.utils.isAddress(address) || "Please provide a valid address";
+      return (
+        this.web3Instance.utils.isAddress(address) ||
+        "Please provide a valid address"
+      );
     },
     notNullAddress(address) {
       return (
