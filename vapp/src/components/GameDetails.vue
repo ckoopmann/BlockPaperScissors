@@ -1,22 +1,20 @@
 <template>
   <v-card class="mx-auto" max-width="800">
-    <v-card-title primary-title class="justify-center">
-      {{ state }}</v-card-title
-    >
-    <v-card-text>
-      <v-container>
-        <v-row class="justify-center">Opponent: {{ opponent }}</v-row>
-      </v-container>
-    </v-card-text>
-    <v-card-actions>
-      <component
-        :is="actionComponent"
-        :gameId="gameId"
-        v-if="gameDataLoaded"
-        class="mb-4"
-      ></component>
-      <h2 v-else>Loading</h2>
-    </v-card-actions>
+      <v-card-title primary-title class="justify-center">
+        {{ state }}</v-card-title
+      >
+      <v-card-text>
+        <v-container>
+          <v-row class="justify-center">Opponent: {{ opponent }}</v-row>
+        </v-container>
+      </v-card-text>
+      <v-card-actions>
+        <component
+          :is="actionComponent"
+          :gameId="gameId"
+          class="mb-4"
+        ></component>
+      </v-card-actions>
   </v-card>
 </template>
 
@@ -43,7 +41,7 @@ export default {
     ...mapGetters("contractModule", ["gameDataSingle"]),
 
     gameDataLoaded() {
-      return this.gameData != null;
+      return this.gameDataLoadedSingle(this.gameId);
     },
 
     gameData() {

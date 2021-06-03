@@ -22,6 +22,7 @@ const contractModule = {
     gameDataLoaded: false,
     gameIds: [],
     gameData: {},
+    gameLoadingStates: {},
   },
   mutations: {
     setContractInstance(state, contractInstance) {
@@ -31,6 +32,10 @@ const contractModule = {
       state.gameIds = gameIds;
     },
     setGameData(state, { gameId, gameData }) {
+      console.log("Adding Game Data: ", gameId, gameData);
+      if (!state.gameIds.includes(gameId)) {
+        state.gameIds = [gameId, ...state.gameIds];
+      }
       state.gameData[gameId] = gameData;
     },
     setGameDataLoaded(state, loadingFlag) {
@@ -49,14 +54,18 @@ const contractModule = {
       console.log("setting contract to: ", contract);
       commit("setContractInstance", contract);
     },
-    registerContractEventListeners({ getters, dispatch }) {
+    registerContractEventListeners({ getters, rootGetters, dispatch }) {
       const contract = getters["contractInstance"];
       if (contract != null) {
         // Reload game list on any event TODO: Filter to avoid triggering unecessary reloads
         contract.events.allEvents({ fromBloc: "lates" }, (error, event) => {
           console.log("Intercepted GameStarted Event:", event, error);
           if (event != null) {
-            dispatch("loadGames");
+            const {firstPlayer, secondPlayer, gameId} = event.returnValues;
+            const activeAccount = rootGetters["web3Module/activeAccount"];
+            if([firstPlayer, secondPlayer].includes(activeAccount)){
+              dispatch("loadSingleGame", gameId);
+            }
           }
         });
       }
@@ -73,9 +82,10 @@ const contractModule = {
       for (var gameId of gameIds) {
         await dispatch("loadSingleGame", gameId);
       }
-      commit("setGameDataLoaded", true);
+      commit("setGameDataLoaded",  true);
     },
     async loadSingleGame({ getters, commit, rootGetters }, gameId) {
+      commit("setGameDataLoaded", false);
       const contract = getters["contractInstance"];
       const contractData = await contract.methods.getGameData(gameId).call();
       const activeAccount = rootGetters["web3Module/activeAccount"];
@@ -93,6 +103,7 @@ const contractModule = {
 
       console.log(`Setting game data for ${gameId} to: `, gameData);
       commit("setGameData", { gameId, gameData });
+      commit("setGameDataLoaded",  true);
     },
     async makeMove({ getters, rootGetters }, { gameId, move }) {
       const contract = getters["contractInstance"];
