@@ -14,6 +14,15 @@
           <v-card-text>
             <v-container>
               <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    label="Title"
+                    hint="This Game Title will be visible to everyone so don't include any secret information"
+                    v-model="title"
+                    required
+                    persistent-hint
+                  ></v-text-field>
+                </v-col>
                 <v-col cols="6">
                   <v-select
                     :items="['Block', 'Paper', 'Scissors']"
@@ -69,6 +78,7 @@ export default {
       opponent: "",
       secret: "",
       move: "",
+      title: "",
     };
   },
 
@@ -80,8 +90,8 @@ export default {
   methods: {
     ...mapActions("contractModule", ["startGame"]),
     async submit(event) {
-      const { opponent, secret, move } = this;
-      await this.startGame({ opponent, secret, move });
+      const { title, opponent, secret, move } = this;
+      await this.startGame({title, opponent, secret, move });
       this.dialog = false;
     },
     close() {

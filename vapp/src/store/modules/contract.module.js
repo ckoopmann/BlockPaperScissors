@@ -99,6 +99,7 @@ const contractModule = {
         firstMove: moves[parseInt(contractData["5"])],
         secondMove: moves[parseInt(contractData["6"])],
         result: results[parseInt(contractData["7"])],
+        title: contractData["8"],
       };
 
       console.log(`Setting game data for ${gameId} to: `, gameData);
@@ -117,7 +118,7 @@ const contractModule = {
         .send({ from: activeAccount });
       console.log("Result: ", result);
     },
-    async startGame({ getters, rootGetters }, { opponent, secret, move }) {
+    async startGame({ getters, rootGetters }, { title, opponent, secret, move }) {
       const web3 = rootGetters["web3Module/web3Instance"];
       const contract = getters["contractInstance"];
       const activeAccount = rootGetters["web3Module/activeAccount"];
@@ -132,7 +133,7 @@ const contractModule = {
       console.log("Encrypted Move: ", encryptedMove);
 
       const result = await contract.methods
-        .startGame(opponent, encryptedMove)
+        .startGame(title, opponent, encryptedMove)
         .send({ from: activeAccount });
       console.log("Result: ", result);
     },

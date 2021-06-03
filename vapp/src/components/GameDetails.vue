@@ -1,7 +1,7 @@
 <template>
   <v-card class="mx-auto" max-width="800">
       <v-card-title primary-title class="justify-center">
-        {{ state }}</v-card-title
+        {{ title }}</v-card-title
       >
       <v-card-text>
         <v-container>
@@ -48,8 +48,8 @@ export default {
       return this.gameDataSingle(this.gameId);
     },
 
-    state() {
-      return this.gameData.state;
+    title() {
+      return this.gameData.title;
     },
 
     userIsFirstPlayer() {
