@@ -27,16 +27,20 @@ const web3Module = {
       commit("setWeb3Instance", web3);
 
       let accounts = await web3.eth.getAccounts();
-      console.log(
-        "Active Acount from inside vuex: ",
-        accounts[0]
-      );
+      console.log("Active Acount from inside vuex: ", accounts[0]);
       commit("setActiveAccount", accounts[0]);
 
       let networkId = await web3.eth.net.getId();
       commit("setNetworkId", networkId);
-
-
+    },
+    async registerUpdateListener({ getters, dispatch }) {
+      console.log("Current Provider:", window.ethereum);
+      window.ethereum.on("accountsChanged", async () => {
+        console.log("Detected update");
+        await dispatch("initializeWeb3");
+        await dispatch("contractModule/initializeContract", {}, { root: true });
+        await dispatch("contractModule/loadGames", {}, { root: true });
+      });
     },
   },
   getters: {

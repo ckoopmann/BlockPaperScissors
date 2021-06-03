@@ -17,7 +17,7 @@ export default {
     ...mapGetters("contractModule", ["contractInstance", "gameIds"]),
   },
   methods: {
-    ...mapActions("web3Module", ["initializeWeb3"]),
+    ...mapActions("web3Module", ["initializeWeb3", "registerUpdateListener"]),
     ...mapActions("contractModule", ["initializeContract", "loadGames"]),
   },
   async mounted() {
@@ -27,6 +27,7 @@ export default {
     console.log("contract instance: ", this.contractInstance);
     await this.loadGames();
     console.log("Game Ids", this.gameIds);
+    await this.registerUpdateListener();
   },
 };
 </script>
