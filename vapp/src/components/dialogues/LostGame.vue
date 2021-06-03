@@ -1,7 +1,7 @@
 <template>
   <v-row justify="center">
     <v-btn color="red lighten-1" class="disable-events">
-      You Lost
+      Defeat
     </v-btn>
   </v-row>
 </template>

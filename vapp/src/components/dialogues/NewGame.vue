@@ -91,8 +91,9 @@ export default {
     ...mapActions("contractModule", ["startGame"]),
     async submit(event) {
       const { title, opponent, secret, move } = this;
-      await this.startGame({title, opponent, secret, move });
+      await this.startGame({ title, opponent, secret, move });
       this.dialog = false;
+      this.$router.push("/games");
     },
     close() {
       this.dialog = false;
