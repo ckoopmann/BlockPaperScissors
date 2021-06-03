@@ -23,11 +23,8 @@ contract BlockPaperScissors {
     mapping(address => bytes32[]) public playerGames;
 
     event GameStarted(address firstPlayer, address secondPlayer, bytes32 gameId);
-    event FirstMovePlayed(bytes32 gameId, bytes32 encryptedMove);
-    event FirstMoveRevealed(bytes32 gameId, bytes32 encryptedMove, Move decryptedMove, bytes32 secret);
-    event MoveHashCalculated(bytes32 encryptedMove, uint8 decryptedMove, bytes32 secret);
-    event SecondMovePlayed(bytes32 gameId, Move move);
-    event GameEvaluated(bytes32 gameId, GameResult result);
+    event SecondMovePlayed(address firstPlayer, address secondPlayer, bytes32 gameId, Move move);
+    event GameEvaluated(address firstPlayer, address secondPlayer, bytes32 gameId, GameResult result);
 
     function encryptMove(uint8 move, bytes32 secret) public pure returns (bytes32) {
         return keccak256(abi.encodePacked(move, secret));
@@ -55,10 +52,9 @@ contract BlockPaperScissors {
         playerGames[msg.sender].push(gameId);
         playerGames[opponent].push(gameId);
 
-        emit GameStarted(msg.sender, opponent, gameId);
 
         games[gameId].firstMoveEncrypted = encryptedMove;
-        emit FirstMovePlayed(gameId, encryptedMove);
+        emit GameStarted(msg.sender, opponent, gameId);
     }
 
     function makeMove(bytes32 gameId, uint8 move) public {
@@ -70,7 +66,7 @@ contract BlockPaperScissors {
         games[gameId].secondMove = Move(move);
         games[gameId].state = GameState.Played;
 
-        emit SecondMovePlayed(gameId, Move(move));
+        emit SecondMovePlayed(games[gameId].firstPlayer, msg.sender, gameId, Move(move));
     }
 
 
@@ -83,13 +79,12 @@ contract BlockPaperScissors {
         uint8 decryptedMove = decryptMove(encryptedMove, secret);
         require(decryptedMove > 0, "No valid move could be decrypted for given secret");
         games[gameId].firstMoveSecret = secret;
-        emit FirstMoveRevealed(gameId, encryptedMove, Move(decryptedMove), secret);
 
         // Evaluate Game
         games[gameId].firstMove = Move(decryptedMove);
         games[gameId].result = _calculateGameResult(games[gameId].firstMove, games[gameId].secondMove);
         games[gameId].state = GameState.Evaluated;
-        emit GameEvaluated(gameId, games[gameId].result);
+        emit GameEvaluated(msg.sender, games[gameId].secondPlayer, gameId, games[gameId].result);
     }
 
     function _calculateGameResult(Move firstMove, Move secondMove) internal returns(GameResult){
