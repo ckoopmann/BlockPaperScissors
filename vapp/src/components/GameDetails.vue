@@ -39,31 +39,19 @@ export default {
     WaitForOpponent,
   },
   props: { gameId: { type: String, required: true } },
-  data() {
-    return {
-      contractName: "BlockPaperScissors",
-      method: "getGameData",
-      toUtf8: false,
-      toAscii: false,
-    };
-  },
   computed: {
-    ...mapGetters("contractModule", ["gameDataAll"]),
+    ...mapGetters("contractModule", ["gameDataSingle"]),
 
     gameDataLoaded() {
       return this.gameData != null;
     },
 
     gameData() {
-      return this.gameDataAll[this.gameId];
+      return this.gameDataSingle(this.gameId);
     },
 
     state() {
-      if ("state" in this.gameData) {
-        return this.gameData.state;
-      } else {
-        return "Loading";
-      }
+      return this.gameData.state;
     },
 
     userIsFirstPlayer() {

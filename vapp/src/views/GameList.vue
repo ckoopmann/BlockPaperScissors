@@ -1,9 +1,14 @@
 <template>
   <div class="game-list">
-    <h2 class="mt-4">Your Games</h2>
-    <v-row class="fill-height" align="center" justify="center">
-      <GameDetails v-for="(id, index) in gameIds" :key="index" :gameId="id" />
-    </v-row>
+    <h2 class="mt-4 mb-4">Your Games</h2>
+    <div v-if="gameDataLoaded">
+      <v-row v-for="(id, index) in gameIds" :key="index" class="fill-height mb-4" align="center" justify="center">
+        <GameDetails  :gameId="id" />
+      </v-row>
+    </div>
+    <div v-else>
+      <h2>Loading</h2>
+    </div>
   </div>
 </template>
 
@@ -13,7 +18,7 @@ import GameDetails from "../components/GameDetails";
 
 export default {
   components: { GameDetails },
-  computed: mapGetters("contractModule", ["gameIds"]),
+  computed: mapGetters("contractModule", ["gameIds", "gameDataLoaded"]),
 };
 </script>
 <style scoped>

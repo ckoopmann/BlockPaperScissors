@@ -19,6 +19,7 @@ const contractModule = {
   name: "contract",
   state: {
     contract: null,
+    gameDataLoaded: false,
     gameIds: [],
     gameData: {},
   },
@@ -31,6 +32,9 @@ const contractModule = {
     },
     setGameData(state, { gameId, gameData }) {
       state.gameData[gameId] = gameData;
+    },
+    setGameDataLoaded(state, loadingFlag) {
+      state.gameDataLoaded = loadingFlag;
     },
   },
   actions: {
@@ -46,6 +50,7 @@ const contractModule = {
       commit("setContractInstance", contract);
     },
     async loadGames({ getters, rootGetters, commit, dispatch }) {
+      commit("setGameDataLoaded", false);
       const contract = getters["contractInstance"];
       const activeAccount = rootGetters["web3Module/activeAccount"];
       const gameIds = await contract.methods
@@ -56,6 +61,7 @@ const contractModule = {
       for (var gameId of gameIds) {
         await dispatch("loadSingleGame", gameId);
       }
+      commit("setGameDataLoaded", true);
     },
     async loadSingleGame({ getters, commit, rootGetters }, gameId) {
       const contract = getters["contractInstance"];
@@ -107,7 +113,7 @@ const contractModule = {
         .send({ from: activeAccount });
       console.log("Result: ", result);
     },
-    async evaluateGame({ getters, rootGetters }, {gameId, secret}) {
+    async evaluateGame({ getters, rootGetters }, { gameId, secret }) {
       const web3 = rootGetters["web3Module/web3Instance"];
       const contract = getters["contractInstance"];
       const activeAccount = rootGetters["web3Module/activeAccount"];
@@ -128,8 +134,23 @@ const contractModule = {
     gameIds(state) {
       return state.gameIds;
     },
+    gameDataLoaded(state) {
+      return state.gameDataLoaded;
+    },
     gameDataAll(state) {
       return state.gameData;
+    },
+    gameDataSingle: (state) => (gameId) => {
+      if (gameId in state.gameData) {
+        return state.gameData[gameId];
+      } else {
+        return {
+          state: "Loading",
+          firstPlayer: "Loading",
+          secondPlayer: "Loading",
+          result: "None",
+        };
+      }
     },
     loadedGameIds(state) {
       console.log("GameIds: ", gameIds);
