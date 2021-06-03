@@ -71,6 +71,8 @@ export default {
     };
   },
 
+  computed: mapGetters("web3Module", ["activeAccount", "web3Instance"]),
+
   methods: {
     ...mapActions("contractModule", ["startGame"]),
     async submit(event) {
@@ -82,7 +84,7 @@ export default {
       this.dialog = false;
     },
     validAddress(address) {
-      return this.utils.isAddress(address) || "Please provide a valid address";
+      return this.web3Instance.utils.isAddress(address) || "Please provide a valid address";
     },
     notNullAddress(address) {
       return (
