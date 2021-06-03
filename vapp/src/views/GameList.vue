@@ -1,6 +1,6 @@
 <template>
   <div class="game-list">
-    <h2 class="mt-4 mb-4">Your Games</h2>
+    <h2 class="mt-4 mb-4 white--text">Your Games</h2>
     <div v-if="gameDataLoaded">
       <v-row v-for="(id, index) in gameIds" :key="index" class="fill-height mb-4" align="center" justify="center">
         <GameDetails  :gameId="id" />

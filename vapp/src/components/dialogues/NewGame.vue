@@ -2,8 +2,8 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent max-width="600px">
       <template v-slot:activator="{ on, attrs }">
-        <v-btn color="primary" dark v-bind="attrs" v-on="on">
-          Start New Game
+        <v-btn color="green" dark v-bind="attrs" v-on="on">
+          New Game
         </v-btn>
       </template>
       <v-card>
@@ -55,10 +55,10 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="close">
+            <v-btn color="white" text @click="close">
               Close
             </v-btn>
-            <v-btn color="blue darken-1" text type="submit">
+            <v-btn color="white" text type="submit">
               Create Game
             </v-btn>
           </v-card-actions>
