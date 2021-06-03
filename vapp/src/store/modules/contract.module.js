@@ -49,6 +49,18 @@ const contractModule = {
       console.log("setting contract to: ", contract);
       commit("setContractInstance", contract);
     },
+    registerContractEventListeners({ getters, dispatch }) {
+      const contract = getters["contractInstance"];
+      if (contract != null) {
+        // Reload game list on any event TODO: Filter to avoid triggering unecessary reloads
+        contract.events.allEvents({ fromBloc: "lates" }, (error, event) => {
+          console.log("Intercepted GameStarted Event:", event, error);
+          if (event != null) {
+            dispatch("loadGames");
+          }
+        });
+      }
+    },
     async loadGames({ getters, rootGetters, commit, dispatch }) {
       commit("setGameDataLoaded", false);
       const contract = getters["contractInstance"];
