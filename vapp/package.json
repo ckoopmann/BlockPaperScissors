@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "deploy": "gh-pages -d dist"
+    "deploy": "cp CNAME ./dist && gh-pages -d dist"
   },
   "dependencies": {
     "prettier": "^1.18.2",
