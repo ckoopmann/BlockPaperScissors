@@ -68,14 +68,16 @@
     <v-alert
       v-if="contractDeployed"
       color="green"
-      id="contract-alert"
+      class="mb-0"
+      dense
     >
     Succesfully connected to the contract (<a :href="etherScanLink">etherscan</a>).
     </v-alert>
     <v-alert
       v-else
       color="red lighten-2"
-      id="contract-alert"
+      class="mb-0"
+      dense
     >
       Contract is not deployed on {{ networkType }} network 
        please switch your network to the Rinkeby Test-Network.
@@ -97,9 +99,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-#contract-alert {
-  position: relative;
-}
-</style>
