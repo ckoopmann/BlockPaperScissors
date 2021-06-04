@@ -21,14 +21,14 @@ export default {
     ...mapActions("contractModule", ["initializeContract", "loadGames", "registerContractEventListeners"]),
   },
   async mounted() {
+    await this.registerUpdateListener();
     await this.initializeWeb3();
     this.initializeContract();
+    this.registerContractEventListeners();
     console.log("Active Account: ", this.activeAccount);
     console.log("contract instance: ", this.contractInstance);
     await this.loadGames();
     console.log("Game Ids", this.gameIds);
-    await this.registerUpdateListener();
-    this.registerContractEventListeners();
   },
 };
 </script>

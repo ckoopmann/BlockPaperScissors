@@ -3,12 +3,11 @@
     <h1 class="mt-4 mb-4 white--text">Block Paper Scissors</h1>
     <h4 class="mb-4 white--text">Your favourite game - on chain</h4>
     <AboutElement title="What is Block Paper Scissors ?" class="mb-4">
-      This is the decentralized, censorship-resistant and permissionless version
-      of the classic game
+      This is the blockchain version of the classic game
       <a href="https://en.wikipedia.org/wiki/Rock_paper_scissors">
         Rock Paper Scissors</a
       >
-      running on the Ethereum blockchain.
+      running on Ethereum.
       <br />
       <br />
 
@@ -21,6 +20,12 @@
       game logic can be found in the
       <a href="https://github.com/ckoopmann/BlockPaperScissors"> Github-Repo</a
       >.
+
+      <br />
+      <br />
+      Note that the smart contract underlying this dapp is currently only <b>deployed on Rinkeby</b> test-net
+      therefore you have to switch the network of your wallet accordingly to try it out.
+
     </AboutElement>
 
     <AboutElement title="How do I play ?" class="mb-4">
@@ -40,7 +45,7 @@
         </li>
       </ol>
       A new game can be opened using the button at the top of the page while all ongoing / evaluated games
-      can be viewed here <router-link to="/games">here</router-link>, including games to which other players have
+      can be viewed <router-link to="/games">here</router-link>, including games to which other players have
       challenged you.
     </AboutElement>
 

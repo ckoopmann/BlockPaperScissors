@@ -23,6 +23,7 @@ const contractModule = {
     gameIds: [],
     gameData: {},
     gameLoadingStates: {},
+    contractDeployed: false,
   },
   mutations: {
     setContractInstance(state, contractInstance) {
@@ -41,18 +42,28 @@ const contractModule = {
     setGameDataLoaded(state, loadingFlag) {
       state.gameDataLoaded = loadingFlag;
     },
+    setContractDeployed(state, contractDeployed) {
+      state.contractDeployed = contractDeployed;
+    },
   },
   actions: {
     initializeContract({ commit, rootGetters }) {
+      commit("setContractDeployed", false);
       const web3 = rootGetters["web3Module/web3Instance"];
       const networkId = rootGetters["web3Module/networkId"];
       const abi = contractJson.abi;
-      const address = contractJson.networks[networkId].address;
-      console.log("using abi: ", abi);
-      console.log("using address: ", address);
-      const contract = new web3.eth.Contract(abi, address);
-      console.log("setting contract to: ", contract);
-      commit("setContractInstance", contract);
+      if(networkId in contractJson.networks){
+        const address = contractJson.networks[networkId].address;
+        console.log("using abi: ", abi);
+        console.log("using address: ", address);
+        const contract = new web3.eth.Contract(abi, address);
+        console.log("setting contract to: ", contract);
+        commit("setContractInstance", contract);
+        commit("setContractDeployed", true);
+      }
+      else{
+        console.log(`Contract is not deployed on network ${networkId}`);
+      } 
     },
     registerContractEventListeners({ getters, rootGetters, dispatch }) {
       const contract = getters["contractInstance"];
@@ -61,9 +72,9 @@ const contractModule = {
         contract.events.allEvents({ fromBloc: "lates" }, (error, event) => {
           console.log("Intercepted GameStarted Event:", event, error);
           if (event != null) {
-            const {firstPlayer, secondPlayer, gameId} = event.returnValues;
+            const { firstPlayer, secondPlayer, gameId } = event.returnValues;
             const activeAccount = rootGetters["web3Module/activeAccount"];
-            if([firstPlayer, secondPlayer].includes(activeAccount)){
+            if ([firstPlayer, secondPlayer].includes(activeAccount)) {
               dispatch("loadSingleGame", gameId);
             }
           }
@@ -82,7 +93,7 @@ const contractModule = {
       for (var gameId of gameIds) {
         await dispatch("loadSingleGame", gameId);
       }
-      commit("setGameDataLoaded",  true);
+      commit("setGameDataLoaded", true);
     },
     async loadSingleGame({ getters, commit, rootGetters }, gameId) {
       commit("setGameDataLoaded", false);
@@ -104,7 +115,7 @@ const contractModule = {
 
       console.log(`Setting game data for ${gameId} to: `, gameData);
       commit("setGameData", { gameId, gameData });
-      commit("setGameDataLoaded",  true);
+      commit("setGameDataLoaded", true);
     },
     async makeMove({ getters, rootGetters }, { gameId, move }) {
       const contract = getters["contractInstance"];
@@ -118,7 +129,10 @@ const contractModule = {
         .send({ from: activeAccount });
       console.log("Result: ", result);
     },
-    async startGame({ getters, rootGetters }, { title, opponent, secret, move }) {
+    async startGame(
+      { getters, rootGetters },
+      { title, opponent, secret, move }
+    ) {
       const web3 = rootGetters["web3Module/web3Instance"];
       const contract = getters["contractInstance"];
       const activeAccount = rootGetters["web3Module/activeAccount"];
@@ -155,8 +169,17 @@ const contractModule = {
     contractInstance(state) {
       return state.contract;
     },
+    contractAddress(state){
+      if(state.contract != null){
+        return state.contract.options.address;
+      }
+      return null;
+    },
     gameIds(state) {
       return state.gameIds;
+    },
+    contractDeployed(state) {
+      return state.contractDeployed;
     },
     gameDataLoaded(state) {
       return state.gameDataLoaded;

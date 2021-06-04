@@ -6,6 +6,7 @@ const web3Module = {
     web3: null,
     activeAccount: null,
     networkId: null,
+    networkType: "",
   },
   mutations: {
     setWeb3Instance(state, web3) {
@@ -20,6 +21,10 @@ const web3Module = {
       console.log("Setting network id to: ", networkId);
       state.networkId = networkId;
     },
+    setNetworkType(state, networkType) {
+      console.log("Setting network type to: ", networkType);
+      state.networkType = networkType;
+    },
   },
   actions: {
     async initializeWeb3({ commit }) {
@@ -32,11 +37,20 @@ const web3Module = {
 
       let networkId = await web3.eth.net.getId();
       commit("setNetworkId", networkId);
+
+      let networkType = await web3.eth.net.getNetworkType();
+      commit("setNetworkType", networkType);
     },
     async registerUpdateListener({ getters, dispatch }) {
       console.log("Current Provider:", window.ethereum);
       window.ethereum.on("accountsChanged", async () => {
-        console.log("Detected update");
+        console.log("Detected account update");
+        await dispatch("initializeWeb3");
+        await dispatch("contractModule/initializeContract", {}, { root: true });
+        await dispatch("contractModule/loadGames", {}, { root: true });
+      });
+      window.ethereum.on("chainChanged", async () => {
+        console.log("Detected network update");
         await dispatch("initializeWeb3");
         await dispatch("contractModule/initializeContract", {}, { root: true });
         await dispatch("contractModule/loadGames", {}, { root: true });
@@ -52,6 +66,9 @@ const web3Module = {
     },
     networkId(state) {
       return state.networkId;
+    },
+    networkType(state) {
+      return state.networkType;
     },
   },
 };
