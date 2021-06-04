@@ -28,11 +28,15 @@ const web3Module = {
   },
   actions: {
     async initializeWeb3({ commit }) {
+      if (window.ethereum) {
+        await ethereum.enable();
+      }
+
       let web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
       commit("setWeb3Instance", web3);
 
       let accounts = await web3.eth.getAccounts();
-      console.log("Active Acount from inside vuex: ", accounts[0]);
+      console.log("Active Acount from inside vuex store: ", accounts[0]);
       commit("setActiveAccount", accounts[0]);
 
       let networkId = await web3.eth.net.getId();
