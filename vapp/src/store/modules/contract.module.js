@@ -141,8 +141,10 @@ const contractModule = {
       const hashedSecret = web3.utils.sha3(secret);
       console.log(hashedSecret);
       console.log(contract.methods);
+
+      const moveNumber = moveMapping[move];
       const encryptedMove = await contract.methods
-        .encryptMove(1, hashedSecret)
+        .encryptMove(moveNumber, hashedSecret)
         .call();
       console.log("Encrypted Move: ", encryptedMove);
 
@@ -205,6 +207,9 @@ const contractModule = {
       }
       const opponents = state.gameIds.map((id) => {
         const data = state.gameData[id];
+        if(data == null){
+          return null;
+        }
         if (data.firstPlayer == "YOU") {
           return data.secondPlayer;
         } else {
