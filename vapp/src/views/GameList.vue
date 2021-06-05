@@ -6,9 +6,6 @@
         <GameDetails  :gameId="id" />
       </v-row>
     </div>
-    <div v-else>
-      <h2>Loading</h2>
-    </div>
   </div>
 </template>
 
