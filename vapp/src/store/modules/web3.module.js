@@ -7,6 +7,7 @@ const web3Module = {
     activeAccount: null,
     networkId: null,
     networkType: "",
+    walletConnected: false,
   },
   mutations: {
     setWeb3Instance(state, web3) {
@@ -25,25 +26,33 @@ const web3Module = {
       console.log("Setting network type to: ", networkType);
       state.networkType = networkType;
     },
+    setWalletConnected(state, walletConnected) {
+      console.log("Setting network type to: ", walletConnected);
+      state.walletConnected = walletConnected;
+    },
   },
   actions: {
     async initializeWeb3({ commit }) {
       if (window.ethereum) {
         await ethereum.enable();
+        commit("setWalletConnected", true);
+        let web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+        commit("setWeb3Instance", web3);
+
+        let accounts = await web3.eth.getAccounts();
+        console.log("Active Acount from inside vuex store: ", accounts[0]);
+        commit("setActiveAccount", accounts[0]);
+
+        let networkId = await web3.eth.net.getId();
+        commit("setNetworkId", networkId);
+
+        let networkType = await web3.eth.net.getNetworkType();
+        commit("setNetworkType", networkType);
+      }
+      else{
+        commit("setWalletConnected", false);
       }
 
-      let web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
-      commit("setWeb3Instance", web3);
-
-      let accounts = await web3.eth.getAccounts();
-      console.log("Active Acount from inside vuex store: ", accounts[0]);
-      commit("setActiveAccount", accounts[0]);
-
-      let networkId = await web3.eth.net.getId();
-      commit("setNetworkId", networkId);
-
-      let networkType = await web3.eth.net.getNetworkType();
-      commit("setNetworkType", networkType);
     },
     async registerUpdateListener({ getters, dispatch }) {
       console.log("Current Provider:", window.ethereum);
@@ -73,6 +82,9 @@ const web3Module = {
     },
     networkType(state) {
       return state.networkType;
+    },
+    walletConnected(state) {
+      return state.walletConnected;
     },
   },
 };
