@@ -1,6 +1,6 @@
 const HDWalletProvider = require("truffle-hdwallet-provider");
 const fs = require("fs");
-const {mnemonic, infuraKey} = require("secrets.json");
+const {mnemonic, infuraKey} = require("./secrets.json");
 
 const path = require("path");
 module.exports = {
