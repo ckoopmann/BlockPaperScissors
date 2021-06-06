@@ -31,7 +31,12 @@
             <v-btn color="blue darken-1" text @click="close">
               Close
             </v-btn>
-            <v-btn color="blue darken-1" text type="submit">
+            <v-progress-circular
+              indeterminate
+              color="primary"
+              v-if="loading"
+            ></v-progress-circular>
+            <v-btn v-else color="blue darken-1" text type="submit">
               Reveal Move
             </v-btn>
           </v-card-actions>
@@ -54,6 +59,7 @@ export default {
   data() {
     return {
       dialog: false,
+      loading: false,
       secret: "",
     };
   },
@@ -63,9 +69,13 @@ export default {
     async submit(event) {
       const { gameId, secret } = this;
 
-      this.evaluateGame({ gameId, secret });
-
-      this.dialog = false;
+      try {
+        this.loading = true;
+        await this.evaluateGame({ gameId, secret });
+        this.dialog = false;
+      } finally {
+        this.loading = false;
+      }
     },
     close() {
       this.dialog = false;

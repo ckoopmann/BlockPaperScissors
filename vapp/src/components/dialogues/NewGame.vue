@@ -59,7 +59,12 @@
             <v-btn color="white" text @click="close">
               Close
             </v-btn>
-            <v-btn color="white" text type="submit">
+            <v-progress-circular
+              indeterminate
+              color="primary"
+              v-if="loading"
+            ></v-progress-circular>
+            <v-btn v-else color="white" text type="submit">
               Create Game
             </v-btn>
           </v-card-actions>
@@ -76,6 +81,7 @@ export default {
   data() {
     return {
       dialog: false,
+      loading: false,
       opponent: "",
       secret: "",
       move: "",
@@ -98,9 +104,14 @@ export default {
     async submit(event) {
       const { title, opponent, secret, move } = this;
       if (this.validateOpponent(opponent)) {
-        await this.startGame({ title, opponent, secret, move });
-        this.dialog = false;
-        this.$router.push("/games");
+        this.loading = true;
+        try {
+          await this.startGame({ title, opponent, secret, move });
+          this.dialog = false;
+          this.$router.push("/games");
+        } finally {
+          this.loading = false;
+        }
       } else {
         console.log("Validation Failed");
       }

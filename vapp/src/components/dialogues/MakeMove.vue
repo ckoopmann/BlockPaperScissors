@@ -30,7 +30,12 @@
             <v-btn color="blue darken-1" text @click="close">
               Close
             </v-btn>
-            <v-btn color="blue darken-1" text type="submit">
+            <v-progress-circular
+              indeterminate
+              color="primary"
+              v-if="loading"
+            ></v-progress-circular>
+            <v-btn v-else color="blue darken-1" text type="submit">
               Make Move
             </v-btn>
           </v-card-actions>
@@ -53,6 +58,7 @@ export default {
   data() {
     return {
       dialog: false,
+      loading: false,
       move: "",
     };
   },
@@ -74,9 +80,14 @@ export default {
   methods: {
     ...mapActions("contractModule", ["makeMove"]),
     async submit(event) {
-      const { gameId, move } = this;
-      this.makeMove({ gameId, move });
-      this.dialog = false;
+      try {
+        const { gameId, move } = this;
+        this.loading = true;
+        await this.makeMove({ gameId, move });
+        this.dialog = false;
+      } finally {
+        this.loading = false;
+      }
     },
     close() {
       this.dialog = false;
