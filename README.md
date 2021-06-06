@@ -6,6 +6,9 @@ A running instance of this dapp should be reachable at [block-paper-scissors.com
 Both dapp and contracts are a work in progress, feel free to open issues if you find areas for improvement.
 The contracts have not been audited and were started as a learning project to improve / develop web3 development skills.
 Use at your own risk!
+The dapp has only been tested with the [Metamask](https://metamask.io) smart wallet, so it is recommended to use metamask when interacting
+with the dapp.
+
 
 # Local Development
 
