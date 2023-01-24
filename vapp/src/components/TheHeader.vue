@@ -73,7 +73,7 @@
       </v-alert>
       <v-alert v-else color="red lighten-2" class="mb-0" dense>
         Contract is not deployed on {{ networkType }} network please switch your
-        network to the Rinkeby Test-Network.
+        network to the Goerli Test-Network.
       </v-alert>
     </div>
     <v-alert v-else color="red lighten-2" class="mb-0" dense>
@@ -92,7 +92,7 @@ export default {
     ...mapGetters("contractModule", ["contractDeployed", "contractAddress"]),
     ...mapGetters("web3Module", ["networkType", "walletConnected"]),
     etherScanLink() {
-      return `https://rinkeby.etherscan.io/address/${this.contractAddress}`;
+      return `https://goerli.etherscan.io/address/${this.contractAddress}`;
     },
   },
 };
