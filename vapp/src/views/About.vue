@@ -26,7 +26,7 @@
       <br />
       <br />
       Note that the smart contract underlying this dapp is currently only
-      <b>deployed on Rinkeby</b> test-net therefore you have to switch the
+      <b>deployed on Goerli</b> test-net therefore you have to switch the
       network of your wallet accordingly to try it out.
 
       <br />
